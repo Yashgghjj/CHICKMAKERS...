@@ -1,0 +1,264 @@
+@import "tailwindcss";
+
+@theme {
+  /* Warm Ochre Sand & Honey Amber Palette (Primary Brand & Buttons) */
+  --color-brand-50: #fdfaf6;
+  --color-brand-100: #f8efdf;
+  --color-brand-200: #f0dbbd;
+  --color-brand-300: #e5c192;
+  --color-brand-400: #d9a467;
+  --color-brand-500: #c27d38;
+  --color-brand-600: #b06d2a;
+  --color-brand-700: #925424;
+  --color-brand-800: #764323;
+  --color-brand-900: #603820;
+  --color-brand-950: #361c0f;
+
+  /* Deep Charcoal Slate (Headers, Footers & Contrast Backgrounds) */
+  --color-sage-50: #f8fafc;
+  --color-sage-100: #f1f5f9;
+  --color-sage-200: #e2e8f0;
+  --color-sage-300: #cbd5e1;
+  --color-sage-400: #94a3b8;
+  --color-sage-500: #64748b;
+  --color-sage-600: #475569;
+  --color-sage-700: #334155;
+  --color-sage-800: #1e293b;
+  --color-sage-900: #0f172a;
+  --color-sage-950: #020617;
+
+  /* Display & Hero Fonts */
+  --font-display: "Playfair Display", serif;
+  --font-hero: "Plus Jakarta Sans", "Outfit", system-ui, sans-serif;
+
+  /* Custom animation */
+  --animate-fade-slide-up: fadeSlideUp 0.4s ease-out both;
+  --animate-fade-in: fadeIn 0.3s ease-out both;
+  --animate-scale-in: scaleIn 0.3s ease-out both;
+  --animate-shimmer: shimmer 1.2s ease-in-out infinite;
+  --animate-logo-float: logoFloat 3.5s ease-in-out infinite;
+  --animate-saw-stroke: sawStroke 2.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  --animate-saw-spin: sawSpin 0.7s linear infinite;
+  --animate-sawdust: sawdustFly 1.5s ease-out infinite;
+  --animate-log-top: logTopSplit 2.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  --animate-log-bottom: logBottomSplit 2.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  --animate-spark-1: sparkFly1 1.2s ease-out infinite;
+  --animate-spark-2: sparkFly2 1.4s ease-out infinite;
+  --animate-spark-3: sparkFly3 1.1s ease-out infinite;
+}
+
+/* ── Wood Log Physical Splitting Keyframes ── */
+@keyframes logTopSplit {
+  0%, 100% {
+    transform: translate(0px, 0px) rotate(0deg);
+  }
+  45%, 65% {
+    transform: translate(-3px, -4px) rotate(-2deg);
+  }
+}
+
+@keyframes logBottomSplit {
+  0%, 100% {
+    transform: translate(0px, 0px) rotate(0deg);
+  }
+  45%, 65% {
+    transform: translate(3px, 4px) rotate(2deg);
+  }
+}
+
+/* ── Wood Log Cutting Saw Animation Keyframes ── */
+@keyframes sawStroke {
+  0% {
+    transform: translate(-4px, 2px) rotate(-8deg);
+  }
+  50% {
+    transform: translate(28px, -4px) rotate(16deg);
+  }
+  100% {
+    transform: translate(-4px, 2px) rotate(-8deg);
+  }
+}
+
+@keyframes sawSpin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes sparkFly1 {
+  0% {
+    opacity: 0;
+    transform: translate(0px, 0px) scale(0.5);
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(25px, -22px) scale(1.4);
+  }
+}
+
+@keyframes sparkFly2 {
+  0% {
+    opacity: 0;
+    transform: translate(0px, 0px) scale(0.5);
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(32px, 15px) scale(1.2);
+  }
+}
+
+@keyframes sparkFly3 {
+  0% {
+    opacity: 0;
+    transform: translate(0px, 0px) scale(0.5);
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(18px, -35px) scale(1.6);
+  }
+}
+
+@keyframes sawdustFly {
+  0% {
+    opacity: 0;
+    transform: translate(0px, 0px) scale(0.5);
+  }
+  30% {
+    opacity: 1;
+    transform: translate(12px, -14px) scale(1.2);
+  }
+  70% {
+    opacity: 0.8;
+    transform: translate(22px, -24px) scale(0.8);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(30px, -32px) scale(0.2);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-150%) skewX(-15deg);
+  }
+  100% {
+    transform: translateX(150%) skewX(-15deg);
+  }
+}
+
+@keyframes logoFloat {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-4px) rotate(1deg);
+  }
+}
+
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* ── Page Enter Wrapper ── */
+.page-enter {
+  animation: fadeSlideUp 0.4s ease-out both;
+}
+
+/* ── Staggered Card Entrance ── */
+.stagger-card {
+  opacity: 0;
+  animation: fadeSlideUp 0.45s ease-out forwards;
+}
+.stagger-card:nth-child(1) { animation-delay: 0.05s; }
+.stagger-card:nth-child(2) { animation-delay: 0.1s; }
+.stagger-card:nth-child(3) { animation-delay: 0.15s; }
+.stagger-card:nth-child(4) { animation-delay: 0.2s; }
+.stagger-card:nth-child(5) { animation-delay: 0.25s; }
+.stagger-card:nth-child(6) { animation-delay: 0.3s; }
+.stagger-card:nth-child(7) { animation-delay: 0.35s; }
+.stagger-card:nth-child(8) { animation-delay: 0.4s; }
+
+/* ── Interactive Card Hover ── */
+.card-interactive {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.card-interactive:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(194, 125, 56, 0.15);
+}
+
+/* ── Smooth Accordion ── */
+.accordion-body {
+  overflow: hidden;
+  animation: accordionOpen 0.3s ease-out both;
+}
+@keyframes accordionOpen {
+  from {
+    max-height: 0;
+    opacity: 0;
+  }
+  to {
+    max-height: 300px;
+    opacity: 1;
+  }
+}
+
+/* ── Smooth scrolling ── */
+html {
+  scroll-behavior: smooth;
+}
+
+/* ── Base body styles ── */
+body {
+  font-family: "DM Sans", system-ui, sans-serif;
+  background-color: #faf7f2;
+  color: #0f172a;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
