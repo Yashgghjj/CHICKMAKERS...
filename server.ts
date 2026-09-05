@@ -13,7 +13,7 @@ import {
 } from './src/data/sampleOrders.ts';
 import { COUPONS, GST_RATE } from './src/types.ts';
 
-const PORT = Number(process.env.PORT) || 3000;
+const PORT = 3000;
 const isProd = process.env.NODE_ENV === 'production';
 
 const orders: Order[] = [...SAMPLE_ORDERS];
@@ -238,7 +238,9 @@ async function startServer() {
   });
 
   if (isProd) {
-    const clientDir = path.join(process.cwd(), 'dist', 'client');
+    const clientDir = typeof __dirname !== 'undefined'
+      ? path.resolve(__dirname, 'client')
+      : path.resolve(process.cwd(), 'dist', 'client');
     app.use(express.static(clientDir));
     app.get('*', (_req, res) => {
       res.sendFile(path.join(clientDir, 'index.html'));

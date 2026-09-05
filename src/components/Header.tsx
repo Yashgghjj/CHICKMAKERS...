@@ -43,17 +43,17 @@ export default function Header({ cartCount, onCartOpen }: HeaderProps) {
           <AnimatedLogo size="md" showSubtitle={true} variant="light" />
 
           {/* Desktop nav */}
-          <nav className="hidden md:flex items-center gap-1">
+          <nav className="hidden md:flex items-center gap-0.5 lg:gap-1 bg-stone-100/60 p-1 rounded-full border border-stone-200/60 backdrop-blur-xs">
             {NAV_LINKS.map((link) => {
               const isActive = pathname === link.to;
               return (
                 <Link
                   key={link.to}
                   to={link.to}
-                  className={`text-sm font-medium px-3 py-2 rounded-lg transition-all ${
+                  className={`text-xs lg:text-sm font-medium px-2.5 lg:px-3.5 py-1.5 rounded-full transition-all duration-200 whitespace-nowrap ${
                     isActive
-                      ? 'text-brand-600 bg-brand-50 font-semibold'
-                      : 'text-stone-600 hover:text-brand-600 hover:bg-stone-50'
+                      ? 'text-white bg-[#E85D26] font-semibold shadow-xs'
+                      : 'text-stone-700 hover:text-stone-950 hover:bg-white/80'
                   }`}
                 >
                   {link.label}
@@ -63,29 +63,38 @@ export default function Header({ cartCount, onCartOpen }: HeaderProps) {
           </nav>
 
           {/* Action buttons */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            
+            {/* Book Visit: High-conversion glowing pill button (No text wrap) */}
             <Link
               to="/book-measurement"
-              className="hidden sm:inline-flex items-center gap-1.5 text-sm font-medium text-brand-600 hover:text-brand-700 px-3 py-2 rounded-lg hover:bg-brand-50 transition-all"
+              className="hidden sm:inline-flex items-center gap-1.5 text-xs lg:text-sm font-bold text-white bg-gradient-to-r from-[#E85D26] to-[#D94E18] hover:from-[#D94E18] hover:to-[#C43E0D] px-3.5 py-2 rounded-full shadow-sm hover:shadow-md hover:shadow-orange-600/25 transition-all duration-200 active:scale-95 whitespace-nowrap border border-orange-400/30 group"
             >
-              <Ruler className="w-4 h-4" /> Book Visit
+              <Ruler className="w-3.5 h-3.5 text-orange-200 group-hover:rotate-12 transition-transform duration-200" />
+              <span>Book Visit</span>
             </Link>
 
+            {/* Track Order: Refined tactile pill */}
             <Link
               to="/track"
-              className="hidden sm:inline-flex items-center gap-1.5 text-sm font-medium text-stone-600 hover:text-sage-800 px-3 py-2 rounded-lg hover:bg-stone-50 transition-all"
+              className="hidden lg:inline-flex items-center gap-1.5 text-xs lg:text-sm font-medium text-stone-700 hover:text-stone-900 bg-stone-100/80 hover:bg-stone-200/80 px-3 py-2 rounded-full border border-stone-200/70 transition-all duration-200 whitespace-nowrap active:scale-95"
             >
-              <Package className="w-4 h-4" /> Track
+              <Package className="w-3.5 h-3.5 text-stone-500" />
+              <span>Track</span>
             </Link>
 
+            {/* Subtle Divider */}
+            <div className="hidden sm:block h-6 w-px bg-stone-200 mx-0.5" />
+
+            {/* Cart Button: Refined circular icon button with badge */}
             <button
               onClick={onCartOpen}
-              className="relative p-2 rounded-lg hover:bg-stone-100 transition-all hover:scale-110"
+              className="relative p-2 sm:p-2.5 rounded-full bg-stone-100 hover:bg-stone-200 text-stone-700 hover:text-stone-950 transition-all duration-200 hover:scale-105 active:scale-95 border border-stone-200/60"
               aria-label="Open cart"
             >
-              <ShoppingCart className="w-5 h-5 text-stone-700" />
+              <ShoppingCart className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
               {cartCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 bg-brand-500 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center animate-scale-in">
+                <span className="absolute -top-1 -right-1 bg-[#E85D26] text-white text-[10px] font-black min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center shadow-xs animate-scale-in">
                   {cartCount}
                 </span>
               )}
@@ -94,7 +103,7 @@ export default function Header({ cartCount, onCartOpen }: HeaderProps) {
             {/* Mobile hamburger */}
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
-              className="md:hidden p-2 rounded-lg hover:bg-stone-100 transition-colors"
+              className="md:hidden p-2 rounded-full bg-stone-100 hover:bg-stone-200 text-stone-700 transition-colors"
               aria-label="Toggle menu"
             >
               {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}

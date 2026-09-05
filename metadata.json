@@ -1,6 +1,6 @@
 {
   "name": "ChickMakers",
-  "version": "2.0.0",
   "description": "Custom Bamboo Chick Blinds & Balcony Protection Solutions",
-  "capabilities": ["e-commerce", "order-tracking", "measurement-booking", "invoice-generation"]
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

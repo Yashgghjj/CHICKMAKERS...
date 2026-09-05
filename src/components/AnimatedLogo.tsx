@@ -158,7 +158,7 @@ export default function AnimatedLogo({
         </div>
 
         {showSubtitle && (
-          <span className={`font-bold ${subtitleSizes} uppercase tracking-widest mt-1.5 flex items-center gap-1.5 ${isDark ? 'text-slate-300' : 'text-slate-600 group-hover:text-slate-900'
+          <span className={`hidden sm:flex font-bold ${subtitleSizes} uppercase tracking-widest mt-1.5 items-center gap-1.5 ${isDark ? 'text-slate-300' : 'text-slate-600 group-hover:text-slate-900'
             } transition-colors`}>
             {/* Spinning Timber Saw Icon */}
             <span className="relative flex h-3.5 w-3.5 items-center justify-center shrink-0">

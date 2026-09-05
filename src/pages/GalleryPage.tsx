@@ -179,14 +179,14 @@ export default function GalleryPage() {
             </div>
           </div>
 
-          {/* Gallery View 1: 3-Column Photo Grid (Matching shivachickmaker.in) */}
+          {/* Gallery View 1: Clean Photo Grid matching user image design */}
           {viewMode === 'grid' ? (
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
               {filteredItems.map((item) => (
                 <div
                   key={item.id}
                   onClick={() => setActiveModalItem(item)}
-                  className="group relative bg-white rounded-2xl overflow-hidden border border-stone-200/80 shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer flex flex-col"
+                  className="group bg-white rounded-2xl overflow-hidden border border-stone-200/80 shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer flex flex-col justify-between"
                 >
                   {/* Image Container */}
                   <div className="relative aspect-[4/3] overflow-hidden bg-stone-100">
@@ -198,54 +198,35 @@ export default function GalleryPage() {
                       loading="lazy"
                     />
                     
-                    {/* Dark gradient overlay on hover */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-5 text-white">
-                      <div className="flex items-center gap-2 text-xs font-semibold text-brand-300 mb-1">
-                        <MapPin className="w-3.5 h-3.5" /> {item.location}
-                      </div>
-                      <p className="text-sm font-medium line-clamp-2 text-stone-100">{item.description}</p>
-                      <div className="mt-3 flex items-center justify-between">
-                        <span className="text-xs bg-brand-500/80 backdrop-blur-sm px-2.5 py-1 rounded-full text-white font-medium">
-                          Click to View Full Details
-                        </span>
-                        <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur flex items-center justify-center text-white">
-                          <Maximize2 className="w-4 h-4" />
-                        </div>
-                      </div>
-                    </div>
-
                     {/* Category / Badge Tags */}
-                    <div className="absolute top-3 left-3 flex gap-1.5 flex-wrap">
-                      <span className="bg-sage-900/85 backdrop-blur-md text-white text-xs font-medium px-2.5 py-1 rounded-lg shadow">
+                    <div className="absolute top-2.5 left-2.5 flex gap-1.5 flex-wrap">
+                      <span className="bg-black/75 backdrop-blur-md text-white text-[11px] font-semibold px-2.5 py-0.5 rounded-md shadow">
                         {item.categoryLabel}
                       </span>
-                      {item.badge && (
-                        <span className="bg-brand-600/90 backdrop-blur-md text-white text-xs font-semibold px-2.5 py-1 rounded-lg shadow">
-                          {item.badge}
-                        </span>
-                      )}
+                    </div>
+
+                    <div className="absolute bottom-2.5 right-2.5">
+                      <span className="bg-[#E85D26] text-white text-[11px] font-bold px-2 py-0.5 rounded shadow">
+                        {item.specs.priceGuide}
+                      </span>
                     </div>
                   </div>
 
-                  {/* Card Content Summary */}
-                  <div className="p-4 md:p-5 flex-1 flex flex-col justify-between">
-                    <div>
-                      <h3 className="font-semibold text-sage-900 text-base md:text-lg mb-1.5 group-hover:text-brand-600 transition-colors line-clamp-1">
-                        {item.title}
-                      </h3>
-                      <p className="text-xs text-stone-500 line-clamp-2 leading-relaxed mb-3">
-                        {item.description}
-                      </p>
-                    </div>
+                  {/* Card Content: Bold Orange Title + Orange READ MORE Button (matching user image) */}
+                  <div className="p-4 flex flex-col items-center justify-between flex-1 bg-white">
+                    <h3 className="text-[#E85D26] font-black tracking-wide text-sm sm:text-base uppercase text-center mb-3 line-clamp-1 group-hover:text-[#D94E18] transition-colors">
+                      {item.title}
+                    </h3>
 
-                    <div className="pt-3 border-t border-stone-100 flex items-center justify-between text-xs text-stone-500">
-                      <span className="font-medium text-brand-700 bg-brand-50 px-2 py-0.5 rounded">
-                        {item.specs.priceGuide}
-                      </span>
-                      <span className="flex items-center gap-1 text-stone-400">
-                        <Clock className="w-3.5 h-3.5" /> {item.specs.craftTime}
-                      </span>
-                    </div>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setActiveModalItem(item);
+                      }}
+                      className="w-full bg-[#E85D26] hover:bg-[#D94E18] active:scale-98 text-white font-bold py-2.5 px-4 rounded-lg uppercase tracking-wider text-xs text-center transition-all duration-200 shadow-sm"
+                    >
+                      READ MORE
+                    </button>
                   </div>
                 </div>
               ))}
