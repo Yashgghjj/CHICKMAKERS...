@@ -346,18 +346,18 @@ export default function GalleryPage() {
                   <Ruler className="w-4 h-4" /> Book Free Measurement
                 </Link>
                 <a
-                  href="tel:+919910426084"
+                  href="tel:+918826054537"
                   className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 backdrop-blur px-6 py-3.5 rounded-xl font-semibold transition-all border border-white/20"
                 >
-                  <Phone className="w-4 h-4" /> Call +91-9910426084
+                  <Phone className="w-4 h-4" /> Call Shiva: +91-8826054537
                 </a>
                 <a
-                  href="https://wa.me/919910426084?text=Hi%20Shiva%20Chick%20Maker%2C%20I%20saw%20your%20photo%20gallery%20and%20would%20like%20a%20quotation."
+                  href="https://wa.me/918826054537?text=Hi%20Shiva%20(Bamboo%20Chick%20Maker)%2C%20I%20saw%20your%20photo%20gallery%20and%20would%20like%20a%20quotation."
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-3.5 rounded-xl font-semibold transition-all"
                 >
-                  <MessageSquare className="w-4 h-4" /> WhatsApp Enquiry
+                  <MessageSquare className="w-4 h-4" /> WhatsApp Shiva
                 </a>
               </div>
             </div>
@@ -486,18 +486,18 @@ export default function GalleryPage() {
 
                 <div className="grid grid-cols-2 gap-2">
                   <a
-                    href="tel:+919910426084"
+                    href="tel:+918826054537"
                     className="inline-flex items-center justify-center gap-1.5 bg-stone-100 hover:bg-stone-200 text-stone-800 py-2.5 rounded-xl font-semibold text-xs transition-colors"
                   >
-                    <Phone className="w-3.5 h-3.5 text-brand-600" /> Call +91-9910426084
+                    <Phone className="w-3.5 h-3.5 text-brand-600" /> Call Shiva: 8826054537
                   </a>
                   <a
-                    href={`https://wa.me/919910426084?text=Hi%20Shiva%20Chick%20Maker%2C%20I%20am%20interested%20in%20"${encodeURIComponent(activeModalItem.title)}"%20from%20your%20photo%20gallery.%20Please%20provide%20a%20quote.`}
+                    href={`https://wa.me/918826054537?text=Hi%20Shiva%2C%20I%20am%20interested%20in%20"${encodeURIComponent(activeModalItem.title)}"%20from%20Bamboo%20Chick%20Maker.%20Please%20provide%20a%20quote.`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center justify-center gap-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 py-2.5 rounded-xl font-semibold text-xs transition-colors"
                   >
-                    <MessageSquare className="w-3.5 h-3.5 text-emerald-600" /> WhatsApp
+                    <MessageSquare className="w-3.5 h-3.5 text-emerald-600" /> WhatsApp Shiva
                   </a>
                 </div>
               </div>

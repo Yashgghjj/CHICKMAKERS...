@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { ArrowRight, Ruler, Shield, Truck, Award, Headphones, Calculator, Camera, Star, HelpCircle, Sparkles } from 'lucide-react';
+import { ArrowRight, Ruler, Shield, Truck, Award, Headphones, Calculator, Camera, Star, HelpCircle, Sparkles, Phone } from 'lucide-react';
 import PageTransition from '../components/PageTransition';
 import GallerySection from '../components/GallerySection';
 import BeforeAfterSlider from '../components/BeforeAfterSlider';
@@ -27,7 +27,7 @@ const CRAFT_STEPS = [
   {
     step: '04',
     title: 'Custom Laser Fitting',
-    desc: 'Millimeter-accurate laser measurement & same-day installation across Noida & NCR.',
+    desc: 'Millimeter-accurate laser measurement & same-day installation across Greater Noida, Noida & NCR.',
     image: '/img/our-services/bamboo-chick.jpg',
   },
 ];
@@ -41,7 +41,7 @@ const USPS = [
   { 
     icon: Truck, 
     title: 'Free Doorstep Laser Visit', 
-    desc: 'Free laser measurement with physical swatches in Noida & NCR.' 
+    desc: 'Free laser measurement with physical swatches in Greater Noida & NCR.' 
   },
   { 
     icon: Award, 
@@ -51,7 +51,7 @@ const USPS = [
   { 
     icon: Headphones, 
     title: 'Direct Artisan Support', 
-    desc: 'Direct phone & WhatsApp (+91-9910426084) for custom measurements.' 
+    desc: 'Direct phone & WhatsApp (+91 88260 54537) with craftsman Shiva.' 
   },
 ];
 
@@ -113,17 +113,17 @@ export default function HomePage({ onBookMeasurement }: HomePageProps) {
           {/* Artisan Badge */}
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-500/25 text-brand-300 text-[11px] sm:text-xs font-semibold tracking-wider uppercase mb-2 sm:mb-3 border border-brand-400/40 backdrop-blur-md">
             <span className="w-2 h-2 rounded-full bg-brand-400 animate-pulse" />
-            <span>Assam Bamboo · Noida &amp; NCR</span>
+            <span>Bamboo Chick Maker &amp; Shiva Fabrication · Greater Noida</span>
           </div>
 
           {/* Short, Punchy Headline */}
           <h1 className="font-hero text-2xl sm:text-4xl lg:text-5xl font-bold text-white tracking-tight mb-2 sm:mb-3 leading-tight max-w-2xl drop-shadow-md">
-            Bamboo Chicks &amp; Balcony Blinds
+            Bamboo Chick Maker &amp; Shiva Fabrication
           </h1>
 
           {/* Single Short Punchy Line */}
-          <p className="font-hero text-stone-200 text-xs sm:text-sm md:text-base max-w-lg leading-relaxed mb-5 font-normal drop-shadow">
-            Custom-made to your balcony's exact size. Direct artisan pricing.
+          <p className="font-hero text-stone-200 text-xs sm:text-sm md:text-base max-w-xl leading-relaxed mb-5 font-normal drop-shadow">
+            Handcrafted Bamboo Huts, Houses, Gazebos, Chicks, Jafri &amp; Stalls · Heavy-Duty Welding Roof Structures, Pigeon Nets, Artificial Grass &amp; Channel Blinds. Direct from craftsman <strong>Shiva</strong>.
           </p>
 
           {/* Action Buttons: 2 Direct High-Value CTAs */}
@@ -141,13 +141,20 @@ export default function HomePage({ onBookMeasurement }: HomePageProps) {
             >
               <Ruler className="w-3.5 h-3.5 text-brand-300" /> Book Free Visit
             </button>
+
+            <a
+              href="tel:+918826054537"
+              className="inline-flex items-center justify-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white px-4 sm:px-5 py-2.5 sm:py-3 rounded-full font-bold transition-all text-xs sm:text-sm shadow-md"
+            >
+              <Phone className="w-3.5 h-3.5" /> Call Shiva: 8826054537
+            </a>
           </div>
 
           {/* Crisp, Concise Features Row */}
           <div className="mt-5 pt-3 border-t border-white/15 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[11px] sm:text-xs font-medium text-stone-200">
             <span>✓ From ₹58/sq.ft</span>
-            <span>✓ Free Laser Visit</span>
-            <span>✓ 24-48h Fitting</span>
+            <span>✓ Direct Artisan Shiva</span>
+            <span>✓ Sector 149 Greater Noida</span>
             <span>✓ 5-Yr Guarantee</span>
           </div>
 
@@ -214,7 +221,7 @@ export default function HomePage({ onBookMeasurement }: HomePageProps) {
         <div className="absolute inset-0 z-0 pointer-events-none">
           <img
             src="/img/why-choose-bg.png"
-            alt="Shiva Chick Maker Artisan Bamboo Craftsmanship"
+            alt="Bamboo Chick Maker & Shiva Fabrication Artisan Craftsmanship"
             className="w-full h-full object-cover object-center brightness-105 contrast-110 opacity-80"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-black/75 via-black/50 to-black/80" />
@@ -226,10 +233,10 @@ export default function HomePage({ onBookMeasurement }: HomePageProps) {
               <Sparkles className="w-3.5 h-3.5 text-brand-300" /> Direct Workshop Value
             </div>
             <h2 className="font-display text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-2 tracking-tight drop-shadow-md">
-              Why Choose Chick Maker?
+              Why Choose Bamboo Chick Maker &amp; Shiva Fabrication?
             </h2>
             <p className="text-stone-200 max-w-xl mx-auto text-xs sm:text-sm leading-relaxed">
-              Premium handcrafted Assam bamboo chicks, fencing, blinds, and safety nets across Noida &amp; NCR.
+              Premium handcrafted Assam bamboo chicks, huts, gazebos, welding roof structures, safety nets, artificial grass &amp; channel blinds across Greater Noida, Noida &amp; NCR.
             </p>
           </div>
 
@@ -256,12 +263,12 @@ export default function HomePage({ onBookMeasurement }: HomePageProps) {
             <div className="inline-flex flex-wrap items-center justify-center gap-2 sm:gap-4 bg-black/75 backdrop-blur-xl px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl border border-white/20 text-xs text-stone-200 shadow-xl font-medium">
               <span className="flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                Workshop: Sector 149, Greater Noida
+                Workshop: LG-04, Asarfi Plaza, Sector 149, Greater Noida, UP 201310
               </span>
               <span className="text-white/30 hidden sm:inline">|</span>
-              <span>100% Assam Bamboo</span>
+              <span>Proprietor: Shiva (+91 88260 54537)</span>
               <span className="text-white/30 hidden sm:inline">|</span>
-              <span>Direct Artisan Pricing</span>
+              <span>Direct Workshop Pricing</span>
             </div>
           </div>
         </div>

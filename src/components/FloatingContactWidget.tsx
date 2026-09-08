@@ -24,24 +24,24 @@ export default function FloatingContactWidget() {
           </div>
 
           <p className="text-xs text-stone-200 mb-4 leading-relaxed">
-            Need an instant quote or free laser measurement visit in Noida &amp; NCR? Contact our team directly:
+            Direct artisan &amp; fabrication enquiry in Greater Noida &amp; NCR. Talk directly with Shiva:
           </p>
 
           <div className="space-y-2">
             <a
-              href="https://wa.me/919910426084?text=Hi%20Chick%20Makers%2C%20I%20am%20looking%20for%20bamboo%20chicks%20/%20safety%20nets%20quote."
+              href="https://wa.me/918826054537?text=Hi%20Shiva%2C%20I%20visited%20Bamboo%20Chick%20Maker%20/%20Shiva%20Fabrication%20and%20would%20like%20a%20quotation."
               target="_blank"
               rel="noopener noreferrer"
               className="w-full inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white py-2.5 rounded-xl font-bold text-xs transition-colors shadow-md"
             >
-              <MessageSquare className="w-4 h-4" /> WhatsApp Us Now
+              <MessageSquare className="w-4 h-4" /> WhatsApp Shiva (+91 88260 54537)
             </a>
 
             <a
-              href="tel:+919910426084"
+              href="tel:+918826054537"
               className="w-full inline-flex items-center justify-center gap-2 bg-brand-600 hover:bg-brand-500 text-white py-2.5 rounded-xl font-bold text-xs transition-colors shadow-md"
             >
-              <Phone className="w-4 h-4" /> Call +91-9910426084
+              <Phone className="w-4 h-4" /> Call Shiva: 8826054537
             </a>
 
             <Link

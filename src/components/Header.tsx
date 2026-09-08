@@ -27,12 +27,12 @@ export default function Header({ cartCount, onCartOpen }: HeaderProps) {
       <div className="bg-sage-900 text-white text-xs py-1.5 text-center hidden sm:block">
         <div className="max-w-7xl mx-auto px-4 flex items-center justify-between">
           <span className="inline-flex items-center gap-1 font-medium text-stone-200">
-            Handcrafted Assam Bamboo &amp; Architectural Blinds
+            Bamboo Chick Maker &amp; Shiva Fabrication · Huts, Blinds, Pigeon Nets &amp; Roofing
           </span>
           <span className="inline-flex items-center gap-1 font-medium">
-            <Phone className="w-3 h-3 text-brand-400" /> Direct: <a href="tel:+919910426084" className="hover:text-brand-300 underline">+91 99104 26084</a>
+            <Phone className="w-3 h-3 text-brand-400" /> Shiva: <a href="tel:+918826054537" className="hover:text-brand-300 underline font-bold text-amber-300">+91 88260 54537</a>
           </span>
-          <span className="text-stone-300">Free Laser Measurement in Noida &amp; Delhi NCR</span>
+          <span className="text-stone-300">Greater Noida · Noida · Delhi NCR</span>
         </div>
       </div>
 
@@ -149,6 +149,12 @@ export default function Header({ cartCount, onCartOpen }: HeaderProps) {
             >
               <Package className="w-4 h-4" /> Track Your Order
             </Link>
+            <a
+              href="tel:+918826054537"
+              className="flex items-center gap-2 text-sm font-bold text-emerald-700 bg-emerald-50 px-3 py-2.5 rounded-lg hover:bg-emerald-100"
+            >
+              <Phone className="w-4 h-4 text-emerald-600" /> Call Shiva: +91 88260 54537
+            </a>
           </nav>
         </div>
       )}

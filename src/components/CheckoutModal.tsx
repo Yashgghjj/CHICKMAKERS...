@@ -102,7 +102,7 @@ export default function CheckoutModal({ open, items, onClose, onComplete }: Chec
 
   if (!open) return null;
 
-  const upiString = `upi://pay?pa=chickmakers@upi&pn=ChickMakers&am=${total}&cu=INR&tn=${txnId}`;
+  const upiString = `upi://pay?pa=8826054537@upi&pn=BambooChickMaker&am=${total}&cu=INR&tn=${txnId}`;
   const mins = Math.floor(upiTimer / 60);
   const secs = upiTimer % 60;
 

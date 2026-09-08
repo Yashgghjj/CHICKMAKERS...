@@ -138,12 +138,12 @@ export default function QuickPriceEstimator() {
               </Link>
               
               <a
-                href={`https://wa.me/919910426084?text=Hi%20Chick%20Makers%2C%20I%20used%20the%20price%20estimator%20for%20a%20${balcony.sqft}%20sq.ft%20${encodeURIComponent(product.label)}%20(Est.%20%E2%82%B9${estimatedCost}).%20Please%20provide%20a%20confirmed%20quote.`}
+                href={`https://wa.me/918826054537?text=Hi%20Shiva%20(Bamboo%20Chick%20Maker)%2C%20I%20used%20the%20price%20estimator%20for%20a%20${balcony.sqft}%20sq.ft%20${encodeURIComponent(product.label)}%20(Est.%20%E2%82%B9${estimatedCost}).%20Please%20provide%20a%20confirmed%20quote.`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white py-3 rounded-xl font-bold text-xs transition-all"
               >
-                <Phone className="w-3.5 h-3.5" /> WhatsApp Direct Estimate
+                <Phone className="w-3.5 h-3.5" /> WhatsApp Shiva (+91 88260 54537)
               </a>
             </div>
 

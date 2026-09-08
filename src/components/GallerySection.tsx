@@ -451,18 +451,18 @@ export default function GallerySection() {
 
                 <div className="grid grid-cols-2 gap-2">
                   <a
-                    href="tel:+919910426084"
+                    href="tel:+918826054537"
                     className="bg-stone-100 hover:bg-stone-200 text-stone-800 font-semibold py-2.5 px-3 rounded-xl text-xs flex items-center justify-center gap-1.5 transition-colors text-center"
                   >
-                    <Phone className="w-3.5 h-3.5 text-[#E85D26]" /> Call Directly
+                    <Phone className="w-3.5 h-3.5 text-[#E85D26]" /> Call Shiva
                   </a>
                   <a
-                    href={`https://wa.me/919910426084?text=Hi%2C%20I%20saw%20${encodeURIComponent(selectedItem.title)}%20on%20ChickMakers%20and%20want%20a%20quote.`}
+                    href={`https://wa.me/918826054537?text=Hi%20Shiva%2C%20I%20saw%20${encodeURIComponent(selectedItem.title)}%20on%20Bamboo%20Chick%20Maker%20and%20want%20a%20quote.`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-2.5 px-3 rounded-xl text-xs flex items-center justify-center gap-1.5 transition-colors text-center"
                   >
-                    <MessageSquare className="w-3.5 h-3.5" /> WhatsApp
+                    <MessageSquare className="w-3.5 h-3.5" /> WhatsApp Shiva
                   </a>
                 </div>
               </div>

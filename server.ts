@@ -128,7 +128,7 @@ async function startServer() {
     res.json({
       status: 'ok',
       timestamp: new Date().toISOString(),
-      service: 'ChickMakers Backend API',
+      service: 'Bamboo Chick Maker & Shiva Fabrication API',
       activeOrdersCount: orders.length,
       activeAppointmentsCount: appointments.length,
     });

@@ -31,11 +31,11 @@ export default function InvoiceModal({ order, onClose }: InvoiceModalProps) {
         <div className="invoice-print-area p-8">
           <div className="flex justify-between items-start mb-8">
             <div>
-              <h1 className="font-display text-2xl font-bold text-sage-900">ChickMakers™</h1>
-              <p className="text-sm text-stone-500 mt-1">Handcrafted Blinds & Balcony Systems</p>
-              <p className="text-xs text-stone-400 mt-2">
-                GSTIN: 07AABCC1234D1Z5<br />
-                Workshop: Plot 42, Okhla Industrial Area, New Delhi - 110020
+              <h1 className="font-display text-2xl font-bold text-sage-900">Bamboo Chick Maker™</h1>
+              <p className="text-sm text-stone-600 mt-1 font-medium">&amp; Shiva Fabrication · Proprietor: Shiva</p>
+              <p className="text-xs text-stone-500 mt-2">
+                Mobile: +91 88260 54537 | Email: info@shivachickmaker.in<br />
+                Workshop: LG-04, Asarfi Plaza, Sector 149, Greater Noida, UP - 201310
               </p>
             </div>
             <div className="text-right">
@@ -103,7 +103,7 @@ export default function InvoiceModal({ order, onClose }: InvoiceModalProps) {
               <div className="w-24 h-12 border-2 border-brand-600 rounded flex items-center justify-center text-brand-600 text-xs font-bold rotate-[-5deg]">
                 AUTHORIZED
               </div>
-              <p className="text-xs text-stone-400 mt-1">ChickMakers™</p>
+              <p className="text-xs text-stone-400 mt-1">Bamboo Chick Maker™</p>
             </div>
           </div>
         </div>

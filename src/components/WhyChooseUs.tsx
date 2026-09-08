@@ -18,8 +18,8 @@ const USPS = [
   },
   { 
     icon: Headphones, 
-    title: '24/7 Fast Support', 
-    desc: 'Direct phone & WhatsApp support (+91-9910426084) for orders, quotes & custom builds.' 
+    title: 'Direct Artisan Support', 
+    desc: 'Direct phone & WhatsApp support with Shiva (+91-8826054537) for orders, site visits & quotes.' 
   },
 ];
 
@@ -30,7 +30,7 @@ export default function WhyChooseUs() {
       <div className="absolute inset-0 z-0 pointer-events-none">
         <img
           src="/img/why-choose-bg.png"
-          alt="Shiva Chick Maker Artisan Bamboo Craftsmanship"
+          alt="Bamboo Chick Maker Artisan Craftsmanship"
           className="w-full h-full object-cover object-center brightness-105 contrast-110 opacity-80"
         />
         {/* Subtle vignette overlay so photo details remain clearly visible while text is crisp */}
@@ -40,13 +40,13 @@ export default function WhyChooseUs() {
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6">
         <div className="text-center mb-16">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-black/70 text-brand-400 text-xs font-bold uppercase tracking-wider mb-4 border border-brand-500/40 backdrop-blur-md shadow-lg">
-            <Sparkles className="w-4 h-4 text-brand-400" /> Artisan Craftsmanship & Direct Factory Value
+            <Sparkles className="w-4 h-4 text-brand-400" /> Artisan Craftsmanship &amp; Direct Factory Value
           </div>
           <h2 className="font-display text-3xl md:text-5xl font-bold text-white mb-4 tracking-tight drop-shadow-md">
-            Why Choose Chick Maker?
+            Why Choose Bamboo Chick Maker?
           </h2>
           <p className="text-stone-100 max-w-2xl mx-auto text-base md:text-lg leading-relaxed font-medium drop-shadow">
-            Your trusted destination for premium handcrafted Assam bamboo chicks, fencing, blinds, and Garware safety netting in Noida.
+            Specializing in Bamboo Huts, Houses, Gazebos, Jafri, Balcony Chicks, and Shiva Fabrication Roofing &amp; Safety Nets in Greater Noida &amp; NCR.
           </p>
         </div>
 
@@ -73,7 +73,7 @@ export default function WhyChooseUs() {
           <div className="inline-flex flex-wrap items-center justify-center gap-6 bg-black/75 backdrop-blur-xl px-7 py-4 rounded-2xl border border-white/20 text-xs md:text-sm text-stone-100 shadow-2xl font-medium">
             <span className="flex items-center gap-2">
               <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
-              Workshop: Sector 149, Greater Noida
+              Workshop: LG-04, Asarfi Plaza, Sector 149, Greater Noida
             </span>
             <span className="text-white/30 hidden sm:inline">|</span>
             <span>100% Assam Seasoned Bamboo</span>
