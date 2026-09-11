@@ -215,18 +215,59 @@ export const COUPONS: Record<string, { percent: number; minOrder: number }> = {
 export const GST_RATE = 0.05;
 export const CART_STORAGE_KEY = 'chickmakers_cart';
 export const ORDERS_STORAGE_KEY = 'chickmakers_orders_v2';
+export const AUTH_TOKEN_KEY = 'chickmakers_auth_token';
+export const AUTH_USER_KEY = 'chickmakers_auth_user';
 export const ADMIN_TOKEN_KEY = 'chickmakers_admin_token';
 export const ADMIN_USER_KEY = 'chickmakers_admin_user';
 export const ADMIN_SETTINGS_KEY = 'chickmakers_admin_settings';
 export const ADMIN_PRODUCTS_STORAGE_KEY = 'chickmakers_admin_products_v1';
+export const CUSTOMER_TOKEN_KEY = 'chickmakers_customer_token';
+export const CUSTOMER_USER_KEY = 'chickmakers_customer_user';
+
+export type UserRole = 'customer' | 'admin' | 'superadmin' | 'artisan' | 'manager';
+export type AuthRole = 'customer' | 'admin';
+
+export interface AuthUser {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  role: AuthRole;
+  city?: string;
+  address?: string;
+  pincode?: string;
+  avatar?: string;
+  createdAt: string;
+}
 
 export interface AdminUser {
   id: string;
   name: string;
   email: string;
-  role: 'superadmin' | 'manager' | 'artisan';
+  role: 'admin' | 'superadmin' | 'manager' | 'artisan';
   avatar?: string;
   phone?: string;
+}
+
+export interface CustomerAccount {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  role: 'customer';
+  city?: string;
+  address?: string;
+  pincode?: string;
+  createdAt: string;
+}
+
+export interface SmartAuthResult {
+  success: boolean;
+  role: 'admin' | 'customer' | 'superadmin';
+  token: string;
+  user: AuthUser | AdminUser | CustomerAccount;
+  redirectTo: string;
+  message: string;
 }
 
 export interface CustomerUser {

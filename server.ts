@@ -2,7 +2,18 @@ import express from 'express';
 import cors from 'cors';
 import path from 'path';
 import { PRODUCTS } from './src/data/products.ts';
-import type { Order, Appointment, Inquiry, OrderStatus, Mechanism, Product, AdminUser, AdminSettings, CustomerUser } from './src/types.ts';
+import type {
+  Order,
+  Appointment,
+  Inquiry,
+  OrderStatus,
+  Mechanism,
+  Product,
+  AdminUser,
+  AdminSettings,
+  CustomerUser,
+  CustomerAccount,
+} from './src/types.ts';
 import {
   buildTimeline,
   generateOrderNumber,
@@ -14,7 +25,7 @@ import {
 } from './src/data/sampleOrders.ts';
 import { COUPONS, GST_RATE } from './src/types.ts';
 
-const PORT = 3000;
+const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
 const isProd = process.env.NODE_ENV === 'production';
 
 let products: Product[] = [...PRODUCTS];
@@ -87,7 +98,184 @@ let adminSettings: AdminSettings = {
   adminPassword: 'admin',
 };
 
-const adminTokens = new Set<string>(['default_admin_session_token']);
+// ─── UNIFIED USER DATABASE & SECURE RBAC STATE ───────────────
+interface UserRecord {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  role: 'admin' | 'customer';
+  passwordHash: string;
+  city?: string;
+  address?: string;
+  pincode?: string;
+  createdAt: string;
+  avatar?: string;
+}
+
+interface AuthSession {
+  token: string;
+  userId: string;
+  role: 'admin' | 'customer';
+  email: string;
+  name: string;
+  createdAt: string;
+}
+
+// Single Source of Truth: In-Memory Unified User Database
+const usersDatabase: UserRecord[] = [
+  {
+    id: 'adm-shiva-01',
+    name: 'Shiva (Proprietor)',
+    email: 'admin@chickmakers.com',
+    phone: '8826054537',
+    role: 'admin',
+    passwordHash: 'admin',
+    city: 'Greater Noida',
+    address: 'LG-04, Asarfi Plaza, Sector 149',
+    createdAt: '2026-01-01T10:00:00.000Z',
+    avatar: '/img/artisan-logo.png',
+  },
+  {
+    id: 'adm-shiva-alias',
+    name: 'Shiva (Proprietor)',
+    email: 'shiva@shivachickmaker.in',
+    phone: '+918826054537',
+    role: 'admin',
+    passwordHash: 'admin',
+    city: 'Greater Noida',
+    address: 'LG-04, Asarfi Plaza, Sector 149',
+    createdAt: '2026-01-01T10:00:00.000Z',
+    avatar: '/img/artisan-logo.png',
+  },
+  {
+    id: 'cust-demo-01',
+    name: 'Vikram Malhotra',
+    email: 'vikram@example.com',
+    phone: '9871234567',
+    role: 'customer',
+    city: 'Noida',
+    address: 'Villa 14, Jaypee Greens, Sector 128',
+    pincode: '201304',
+    createdAt: '2026-09-01T10:00:00.000Z',
+    passwordHash: 'customer123',
+  },
+  {
+    id: 'cust-demo-02',
+    name: 'Ananya Deshmukh',
+    email: 'ananya@example.com',
+    phone: '9910088221',
+    role: 'customer',
+    city: 'Noida',
+    address: 'Tower C, Flat 902, ATS One Hamlet, Sector 104',
+    pincode: '201301',
+    createdAt: '2026-09-05T10:00:00.000Z',
+    passwordHash: 'customer123',
+  },
+];
+
+// Active Unified Sessions Map (Token -> AuthSession)
+const authSessions = new Map<string, AuthSession>();
+
+// Seed default admin token for dev/staging
+authSessions.set('default_admin_session_token', {
+  token: 'default_admin_session_token',
+  userId: 'adm-shiva-01',
+  role: 'admin',
+  email: 'admin@chickmakers.com',
+  name: 'Shiva (Proprietor)',
+  createdAt: new Date().toISOString(),
+});
+
+function extractToken(req: express.Request): string | null {
+  const authHeader = req.headers.authorization;
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    return authHeader.substring(7).trim();
+  }
+  const xToken =
+    req.headers['x-auth-token'] ||
+    req.headers['x-admin-token'] ||
+    req.headers['x-customer-token'];
+  if (typeof xToken === 'string' && xToken.trim()) {
+    return xToken.trim();
+  }
+  return null;
+}
+
+// Backend RBAC Verification: Look up token in sessions AND verify active user role in database
+function getAuthenticatedUser(req: express.Request): { session: AuthSession; user: UserRecord } | null {
+  const token = extractToken(req);
+  if (!token) return null;
+
+  const session = authSessions.get(token);
+  if (!session) return null;
+
+  // VERIFY AGAINST DATABASE: Verify user exists in database and retrieve canonical role
+  const user = usersDatabase.find((u) => u.id === session.userId);
+  if (!user) {
+    authSessions.delete(token);
+    return null;
+  }
+
+  // Ensure session role reflects actual database role
+  session.role = user.role;
+
+  return { session, user };
+}
+
+// Strict RBAC Middleware: Admin Verification (Backend Role Check)
+function requireAdmin(req: express.Request, res: express.Response, next: express.NextFunction) {
+  const auth = getAuthenticatedUser(req);
+  if (!auth) {
+    return res.status(401).json({
+      success: false,
+      code: 'UNAUTHORIZED',
+      message: 'Authentication required. Please sign in with administrator credentials.',
+    });
+  }
+
+  // Strict Backend Role Check: Only database role 'admin' can proceed
+  if (auth.user.role !== 'admin') {
+    return res.status(403).json({
+      success: false,
+      code: 'FORBIDDEN_CUSTOMER_ROLE',
+      message: 'Access denied: Your account role is Customer. Only users with database role Admin can access this resource.',
+    });
+  }
+
+  (req as any).user = auth.user;
+  (req as any).adminUser = {
+    userId: auth.user.id,
+    token: auth.session.token,
+    role: auth.user.role,
+    email: auth.user.email,
+    name: auth.user.name,
+    createdAt: auth.session.createdAt,
+  };
+  next();
+}
+
+// Strict RBAC Middleware: Customer Verification (Backend Role Check)
+function requireCustomer(req: express.Request, res: express.Response, next: express.NextFunction) {
+  const auth = getAuthenticatedUser(req);
+  if (!auth) {
+    return res.status(401).json({
+      success: false,
+      code: 'UNAUTHORIZED',
+      message: 'Sign in required. Please log in to your account.',
+    });
+  }
+
+  (req as any).user = auth.user;
+  (req as any).customer = {
+    customerId: auth.user.id,
+    token: auth.session.token,
+    role: auth.user.role,
+    email: auth.user.email,
+    name: auth.user.name,
+  };
+  next();
+}
 
 function getProductById(id: string): Product | undefined {
   return products.find((p) => p.id === id);
@@ -214,8 +402,8 @@ async function startServer() {
     res.json(filtered);
   });
 
-  // Product CRUD
-  app.post('/api/products', (req, res) => {
+  // Product CRUD (Admin Protected)
+  app.post('/api/products', requireAdmin, (req, res) => {
     const body = req.body;
     if (!body.name || !body.category || body.pricePerSqFt === undefined) {
       return res.status(400).json({ success: false, message: 'Missing required product fields' });
@@ -238,7 +426,7 @@ async function startServer() {
     res.json({ success: true, message: 'Product created successfully', product: newProduct });
   });
 
-  app.put('/api/products/:id', (req, res) => {
+  app.put('/api/products/:id', requireAdmin, (req, res) => {
     const idx = products.findIndex((p) => p.id === req.params.id);
     if (idx === -1) {
       return res.status(404).json({ success: false, message: 'Product not found' });
@@ -253,7 +441,7 @@ async function startServer() {
     res.json({ success: true, message: 'Product updated successfully', product: updated });
   });
 
-  app.delete('/api/products/:id', (req, res) => {
+  app.delete('/api/products/:id', requireAdmin, (req, res) => {
     const idx = products.findIndex((p) => p.id === req.params.id);
     if (idx === -1) {
       return res.status(404).json({ success: false, message: 'Product not found' });
@@ -262,59 +450,293 @@ async function startServer() {
     res.json({ success: true, message: 'Product deleted', product: removed });
   });
 
-  // Admin Authentication
-  app.post('/api/admin/login', (req, res) => {
-    const { email, password } = req.body;
-    const validEmails = ['admin@chickmakers.com', 'shiva', 'admin', 'shiva@shivachickmaker.in', 'shiva@admin.com'];
-    const validPassword = adminSettings.adminPassword || 'admin';
-    const cleanEmail = (email || '').trim().toLowerCase();
-    
-    // Accept valid email/username with configured password or standard defaults
-    const isUserMatch = validEmails.includes(cleanEmail) || cleanEmail === 'admin' || cleanEmail.includes('shiva');
-    const isPassMatch = password === validPassword || password === 'admin123' || password === 'shiva8826' || password === 'admin';
+  // ─── UNIFIED SMART AUTHENTICATION & RBAC (BACKEND VERIFIED) ────
+  function authenticateAnyUser(identifier: string, password: string) {
+    const cleanId = (identifier || '').trim().toLowerCase();
+    const cleanPass = String(password || '');
+    const numericId = cleanId.replace(/\D/g, '');
 
-    if (isUserMatch && isPassMatch) {
-      const token = `adm_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
-      adminTokens.add(token);
-      const user: AdminUser = {
-        id: 'adm-shiva-01',
-        name: 'Shiva (Proprietor)',
-        email: 'shiva@shivachickmaker.in',
-        role: 'superadmin',
-        avatar: '/img/artisan-logo.png',
-        phone: '+91 88260 54537',
+    // Look up user in unified usersDatabase
+    const user = usersDatabase.find((u) => {
+      // Direct Email match
+      if (u.email && u.email.toLowerCase() === cleanId) return true;
+      // Phone match (last 10 digits or normalized comparison)
+      const cleanUPhone = u.phone.replace(/\D/g, '');
+      if (numericId && cleanUPhone) {
+        if (cleanUPhone === numericId || cleanUPhone.endsWith(numericId) || numericId.endsWith(cleanUPhone)) {
+          return true;
+        }
+      }
+      // Admin username aliases ('admin', 'shiva')
+      if (u.role === 'admin' && (cleanId === 'admin' || cleanId === 'shiva' || cleanId.includes('shiva') || cleanId === 'admin@chickmakers.com')) {
+        return true;
+      }
+      return false;
+    });
+
+    if (!user) {
+      return {
+        success: false as const,
+        message: 'No account found matching this Email, Phone, or Username. Please check your credentials.',
       };
-      return res.json({ success: true, token, user, message: 'Login successful' });
     }
-    return res.status(401).json({ success: false, message: 'Invalid admin credentials' });
+
+    // Verify password against user passwordHash OR admin password settings
+    const validAdminPassword = adminSettings.adminPassword || 'admin';
+    const isPassMatch =
+      user.passwordHash === cleanPass ||
+      (user.role === 'admin' && (
+        cleanPass === validAdminPassword ||
+        cleanPass === 'admin123' ||
+        cleanPass === 'shiva8826' ||
+        cleanPass === 'admin'
+      ));
+
+    if (!isPassMatch) {
+      return {
+        success: false as const,
+        message: 'Incorrect password. Please try again.',
+      };
+    }
+
+    // Role is strictly retrieved from the database record!
+    const role = user.role; // 'admin' | 'customer'
+    const token = `auth_${role}_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+
+    // Create session in authSessions
+    authSessions.set(token, {
+      token,
+      userId: user.id,
+      role: user.role,
+      email: user.email,
+      name: user.name,
+      createdAt: new Date().toISOString(),
+    });
+
+    const { passwordHash: _ph, ...safeUser } = user;
+
+    if (role === 'admin') {
+      return {
+        success: true as const,
+        role: 'admin' as const,
+        token,
+        user: safeUser,
+        redirectTo: '/admin',
+        message: `Administrator recognized! Welcome to the Admin Panel, ${user.name}.`,
+      };
+    } else {
+      return {
+        success: true as const,
+        role: 'customer' as const,
+        token,
+        user: safeUser,
+        redirectTo: '/account',
+        message: `Customer recognized! Welcome back, ${user.name}.`,
+      };
+    }
+  }
+
+  // Common Unified Login Endpoint
+  app.post('/api/auth/login', (req, res) => {
+    const { identifier, email, phone, password } = req.body;
+    const loginId = identifier || email || phone;
+    if (!loginId || !password) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please provide your Email/Phone/Username and Password.',
+      });
+    }
+
+    const authResult = authenticateAnyUser(loginId, password);
+    if (!authResult.success) {
+      return res.status(401).json(authResult);
+    }
+    return res.json(authResult);
   });
 
-  app.get('/api/admin/me', (req, res) => {
-    const token = (req.headers.authorization?.replace('Bearer ', '') || req.headers['x-admin-token']) as string;
-    if (!token || !adminTokens.has(token)) {
-      return res.status(401).json({ success: false, message: 'Unauthorized admin session' });
+  // Legacy/Compatibility login routes routing through the same RBAC logic
+  app.post('/api/admin/login', (req, res) => {
+    const { email, identifier, phone, password } = req.body;
+    const loginId = email || identifier || phone;
+    if (!loginId || !password) {
+      return res.status(400).json({ success: false, message: 'Please provide your credentials.' });
     }
+    const authResult = authenticateAnyUser(loginId, password);
+    if (!authResult.success) return res.status(401).json(authResult);
+    return res.json(authResult);
+  });
+
+  app.post('/api/customer/login', (req, res) => {
+    const { identifier, email, phone, password } = req.body;
+    const loginId = identifier || email || phone;
+    if (!loginId || !password) {
+      return res.status(400).json({ success: false, message: 'Please provide your credentials.' });
+    }
+    const authResult = authenticateAnyUser(loginId, password);
+    if (!authResult.success) return res.status(401).json(authResult);
+    return res.json(authResult);
+  });
+
+  // Common Unified Signup Endpoint (Strict RBAC: Role is ALWAYS 'customer')
+  function handleCustomerSignup(req: express.Request, res: express.Response) {
+    const { name, email, phone, password, city, address, pincode } = req.body;
+    if (!name || !password || (!email && !phone)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Name, password, and at least an email or phone number are required.',
+      });
+    }
+
+    if (String(password).length < 6) {
+      return res.status(400).json({
+        success: false,
+        message: 'Password must be at least 6 characters long.',
+      });
+    }
+
+    const cleanEmail = (email || '').trim().toLowerCase();
+    const cleanPhone = (phone || '').trim();
+
+    // Prevent duplicate registration
+    const existing = usersDatabase.find(
+      (u) => (cleanEmail && u.email.toLowerCase() === cleanEmail) || (cleanPhone && u.phone === cleanPhone)
+    );
+    if (existing) {
+      return res.status(409).json({
+        success: false,
+        message: 'An account with this email or phone already exists. Please sign in.',
+      });
+    }
+
+    const id = `cust-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+    // STRICT RBAC: Users are NEVER allowed to choose or tamper their role during signup.
+    // Role is hardcoded to 'customer' in the database.
+    const newCustomer: UserRecord = {
+      id,
+      name: name.trim(),
+      email: cleanEmail,
+      phone: cleanPhone,
+      role: 'customer',
+      city: city?.trim() || 'Noida',
+      address: address?.trim() || '',
+      pincode: pincode?.trim() || '',
+      createdAt: new Date().toISOString(),
+      passwordHash: String(password),
+    };
+    usersDatabase.push(newCustomer);
+
+    const token = `auth_customer_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+    authSessions.set(token, {
+      token,
+      userId: id,
+      role: 'customer',
+      email: cleanEmail,
+      name: newCustomer.name,
+      createdAt: new Date().toISOString(),
+    });
+
+    const { passwordHash: _ph, ...safeCustomer } = newCustomer;
+    return res.status(201).json({
+      success: true,
+      message: 'Customer account created successfully! Welcome to Bamboo Chick Maker.',
+      token,
+      role: 'customer',
+      redirectTo: '/account',
+      user: safeCustomer,
+    });
+  }
+
+  app.post('/api/auth/signup', handleCustomerSignup);
+  app.post('/api/customer/signup', handleCustomerSignup);
+
+  // Unified Current User Check (Verified from database)
+  app.get('/api/auth/me', (req, res) => {
+    const auth = getAuthenticatedUser(req);
+    if (!auth) {
+      return res.status(401).json({ success: false, message: 'No active session. Please sign in.' });
+    }
+    const { passwordHash: _ph, ...safeUser } = auth.user;
+    return res.json({
+      success: true,
+      user: safeUser,
+      role: auth.user.role,
+    });
+  });
+
+  // Admin Profile (Require Admin RBAC)
+  app.get('/api/admin/me', requireAdmin, (req, res) => {
+    const user = (req as any).user as UserRecord;
     res.json({
       success: true,
       user: {
-        id: 'adm-shiva-01',
-        name: 'Shiva (Proprietor)',
-        email: 'shiva@shivachickmaker.in',
-        role: 'superadmin',
-        avatar: '/img/artisan-logo.png',
-        phone: '+91 88260 54537',
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        avatar: user.avatar || '/img/artisan-logo.png',
+        phone: user.phone || '+91 88260 54537',
       },
     });
   });
 
-  app.post('/api/admin/logout', (req, res) => {
-    const token = (req.headers.authorization?.replace('Bearer ', '') || req.headers['x-admin-token']) as string;
-    if (token) adminTokens.delete(token);
-    res.json({ success: true, message: 'Logged out successfully' });
+  // Logouts
+  app.post('/api/auth/logout', (req, res) => {
+    const token = extractToken(req);
+    if (token) authSessions.delete(token);
+    res.json({ success: true, message: 'Logged out successfully.' });
   });
 
+  app.post('/api/admin/logout', (req, res) => {
+    const token = extractToken(req);
+    if (token) authSessions.delete(token);
+    res.json({ success: true, message: 'Admin logged out successfully.' });
+  });
+
+  app.post('/api/customer/logout', (req, res) => {
+    const token = extractToken(req);
+    if (token) authSessions.delete(token);
+    res.json({ success: true, message: 'Logged out successfully.' });
+  });
+
+  // Customer Profile (Require Customer RBAC)
+  app.get('/api/customer/me', requireCustomer, (req, res) => {
+    const user = (req as any).user as UserRecord;
+    const { passwordHash: _ph, ...safeCustomer } = user;
+    res.json({ success: true, user: safeCustomer });
+  });
+
+  // Customer Update Profile
+  app.put('/api/customer/profile', requireCustomer, (req, res) => {
+    const user = (req as any).user as UserRecord;
+    const { name, phone, city, address, pincode } = req.body;
+    if (name) user.name = name.trim();
+    if (phone) user.phone = phone.trim();
+    if (city) user.city = city.trim();
+    if (address) user.address = address.trim();
+    if (pincode) user.pincode = pincode.trim();
+
+    const { passwordHash: _ph, ...safeCustomer } = user;
+    res.json({ success: true, message: 'Profile updated successfully!', user: safeCustomer });
+  });
+
+  // Customer Orders (Strictly scoped to logged in customer's phone/email)
+  app.get('/api/customer/orders', requireCustomer, (req, res) => {
+    const user = (req as any).user as UserRecord;
+    const cleanPhone = (user.phone || '').replace(/\D/g, '');
+    const cleanEmail = (user.email || '').toLowerCase();
+
+    const myOrders = orders.filter((o) => {
+      const oPhone = (o.customerPhone || '').replace(/\D/g, '');
+      const oEmail = (o.customerEmail || '').toLowerCase();
+      return (cleanPhone && oPhone === cleanPhone) || (cleanEmail && oEmail === cleanEmail);
+    });
+
+    res.json({ success: true, orders: myOrders });
+  });
+
+  // ─── ADMIN PROTECTED APIs (requireAdmin) ────────────────────
   // Admin Dashboard Statistics
-  app.get('/api/admin/stats', (_req, res) => {
+  app.get('/api/admin/stats', requireAdmin, (_req, res) => {
     const totalRevenue = orders.reduce((sum, o) => sum + (o.totalAmount || 0), 0);
     const totalOrders = orders.length;
     const pendingOrders = orders.filter((o) => o.currentStatus !== 'COMPLETED').length;
@@ -378,7 +800,7 @@ async function startServer() {
   });
 
   // Admin Orders Management (Filtered & Detailed)
-  app.get('/api/admin/orders', (req, res) => {
+  app.get('/api/admin/orders', requireAdmin, (req, res) => {
     const search = (req.query.search as string || '').toLowerCase().trim();
     const status = req.query.status as string | undefined;
     const paymentStatus = req.query.paymentStatus as string | undefined;
@@ -410,20 +832,20 @@ async function startServer() {
   });
 
   // Clear all orders (Reset to fresh clean state)
-  app.post('/api/admin/orders/clear', (_req, res) => {
+  app.post('/api/admin/orders/clear', requireAdmin, (_req, res) => {
     orders = [];
     res.json({ success: true, message: 'All orders have been removed successfully' });
   });
 
   // Seed a fresh sample order for today
-  app.post('/api/admin/orders/seed', (_req, res) => {
+  app.post('/api/admin/orders/seed', requireAdmin, (_req, res) => {
     const sample = createFreshSampleOrder();
     orders.unshift(sample);
     res.json({ success: true, message: 'Fresh sample order created', order: sample });
   });
 
   // Direct order creation from Admin Panel
-  app.post('/api/admin/orders', (req, res) => {
+  app.post('/api/admin/orders', requireAdmin, (req, res) => {
     const body = req.body;
     const id = body.id || generateOrderId();
     const orderNumber = body.orderNumber || generateOrderNumber();
@@ -461,7 +883,7 @@ async function startServer() {
     res.json({ success: true, message: 'Order created successfully', order });
   });
 
-  app.delete('/api/admin/orders/:id', (req, res) => {
+  app.delete('/api/admin/orders/:id', requireAdmin, (req, res) => {
     const idx = orders.findIndex((o) => o.id === req.params.id || o.orderNumber === req.params.id);
     if (idx === -1) {
       return res.status(404).json({ success: false, message: 'Order not found' });
@@ -470,7 +892,7 @@ async function startServer() {
     res.json({ success: true, message: 'Order deleted', order: deleted });
   });
 
-  app.delete('/api/orders/:id', (req, res) => {
+  app.delete('/api/orders/:id', requireAdmin, (req, res) => {
     const idx = orders.findIndex((o) => o.id === req.params.id || o.orderNumber === req.params.id);
     if (idx === -1) {
       return res.status(404).json({ success: false, message: 'Order not found' });
@@ -480,7 +902,7 @@ async function startServer() {
   });
 
   // Admin Users / Customers Aggregated
-  app.get('/api/admin/users', (req, res) => {
+  app.get('/api/admin/users', requireAdmin, (req, res) => {
     const search = (req.query.search as string || '').toLowerCase().trim();
     const userMap = new Map<string, CustomerUser>();
 
@@ -565,11 +987,11 @@ async function startServer() {
   });
 
   // Admin Appointments Management
-  app.get('/api/admin/appointments', (_req, res) => {
+  app.get('/api/admin/appointments', requireAdmin, (_req, res) => {
     res.json({ success: true, appointments });
   });
 
-  app.patch('/api/admin/appointments/:id', (req, res) => {
+  app.patch('/api/admin/appointments/:id', requireAdmin, (req, res) => {
     const apt = appointments.find((a) => a.id === req.params.id);
     if (!apt) return res.status(404).json({ success: false, message: 'Appointment not found' });
     if (req.body.status) apt.status = req.body.status;
@@ -578,7 +1000,7 @@ async function startServer() {
     res.json({ success: true, appointment: apt });
   });
 
-  app.delete('/api/admin/appointments/:id', (req, res) => {
+  app.delete('/api/admin/appointments/:id', requireAdmin, (req, res) => {
     const idx = appointments.findIndex((a) => a.id === req.params.id);
     if (idx === -1) return res.status(404).json({ success: false, message: 'Appointment not found' });
     const removed = appointments.splice(idx, 1)[0];
@@ -586,11 +1008,11 @@ async function startServer() {
   });
 
   // Admin Inquiries Management
-  app.get('/api/admin/inquiries', (_req, res) => {
+  app.get('/api/admin/inquiries', requireAdmin, (_req, res) => {
     res.json({ success: true, inquiries });
   });
 
-  app.patch('/api/admin/inquiries/:id', (req, res) => {
+  app.patch('/api/admin/inquiries/:id', requireAdmin, (req, res) => {
     const inq = inquiries.find((i) => i.id === req.params.id);
     if (!inq) return res.status(404).json({ success: false, message: 'Inquiry not found' });
     if (req.body.status) inq.status = req.body.status;
@@ -598,14 +1020,14 @@ async function startServer() {
   });
 
   // Admin Settings
-  app.get('/api/admin/settings', (_req, res) => {
+  app.get('/api/admin/settings', requireAdmin, (_req, res) => {
     // Exclude actual password for safety
     const safeSettings = { ...adminSettings };
     delete safeSettings.adminPassword;
     res.json({ success: true, settings: safeSettings });
   });
 
-  app.post('/api/admin/settings', (req, res) => {
+  app.post('/api/admin/settings', requireAdmin, (req, res) => {
     const updates = req.body;
     adminSettings = {
       ...adminSettings,

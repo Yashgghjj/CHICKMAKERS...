@@ -16,11 +16,15 @@ import ReviewsPage from './pages/ReviewsPage';
 import FAQPage from './pages/FAQPage';
 import TrackOrderPage from './pages/TrackOrderPage';
 import BookMeasurementPage from './pages/BookMeasurementPage';
+import CustomerAccountPage from './pages/CustomerAccountPage';
+import CustomerAuthModal from './components/CustomerAuthModal';
+import LoginPage from './pages/LoginPage';
 
-// Admin Imports
+// Auth & Admin Imports
+import { AuthProvider } from './context/AuthContext';
+import { CustomerAuthProvider } from './context/CustomerAuthContext';
 import { AdminAuthProvider } from './context/AdminAuthContext';
 import AdminProtectedRoute from './components/admin/AdminProtectedRoute';
-import AdminLoginPage from './pages/admin/AdminLoginPage';
 import AdminDashboardPage from './pages/admin/AdminDashboardPage';
 import AdminProductsPage from './pages/admin/AdminProductsPage';
 import AdminOrdersPage from './pages/admin/AdminOrdersPage';
@@ -37,6 +41,7 @@ function AppContent() {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [cartOpen, setCartOpen] = useState(false);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
+  const [customerAuthOpen, setCustomerAuthOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [lastOrder, setLastOrder] = useState<Order | null>(null);
   const [invoiceOrder, setInvoiceOrder] = useState<Order | null>(null);
@@ -100,7 +105,7 @@ function AppContent() {
   if (isAdminRoute) {
     return (
       <Routes>
-        <Route path="/admin/login" element={<AdminLoginPage />} />
+        <Route path="/admin/login" element={<Navigate to="/login" replace />} />
         <Route path="/admin" element={<AdminProtectedRoute />}>
           <Route index element={<AdminDashboardPage />} />
           <Route path="dashboard" element={<AdminDashboardPage />} />
@@ -122,6 +127,7 @@ function AppContent() {
       <Header
         cartCount={cart.reduce((s, i) => s + i.quantity, 0)}
         onCartOpen={() => setCartOpen(true)}
+        onOpenCustomerAuth={() => setCustomerAuthOpen(true)}
       />
 
       <main className="flex-1">
@@ -166,6 +172,9 @@ function AppContent() {
             }
           />
           <Route path="/book-measurement" element={<BookMeasurementPage />} />
+          <Route path="/account" element={<CustomerAccountPage />} />
+          <Route path="/login" element={<LoginPage defaultTab="login" />} />
+          <Route path="/signup" element={<LoginPage defaultTab="signup" />} />
         </Routes>
       </main>
 
@@ -175,6 +184,11 @@ function AppContent() {
       <FloatingContactWidget />
 
       {/* Overlays — available on every page */}
+      <CustomerAuthModal
+        open={customerAuthOpen}
+        onClose={() => setCustomerAuthOpen(false)}
+      />
+
       <CartDrawer
         open={cartOpen}
         items={cart}
@@ -217,9 +231,13 @@ function AppContent() {
 export default function App() {
   return (
     <BrowserRouter>
-      <AdminAuthProvider>
-        <AppContent />
-      </AdminAuthProvider>
+      <AuthProvider>
+        <AdminAuthProvider>
+          <CustomerAuthProvider>
+            <AppContent />
+          </CustomerAuthProvider>
+        </AdminAuthProvider>
+      </AuthProvider>
     </BrowserRouter>
   );
 }

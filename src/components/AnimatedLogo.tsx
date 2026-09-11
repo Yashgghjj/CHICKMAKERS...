@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 interface AnimatedLogoProps {
   size?: 'sm' | 'md' | 'lg';
   showSubtitle?: boolean;
+  subtitle?: string;
   showIcon?: boolean;
   variant?: 'light' | 'dark';
   className?: string;
@@ -12,6 +13,7 @@ interface AnimatedLogoProps {
 export default function AnimatedLogo({
   size = 'md',
   showSubtitle = true,
+  subtitle = 'By Shiva · Huts, Chicks & Blinds',
   showIcon = true,
   variant = 'light',
   className = '',
@@ -37,20 +39,20 @@ export default function AnimatedLogo({
   }, []);
 
   const iconDimensions = {
-    sm: 'w-10 h-10',
-    md: 'w-14 h-14 md:w-16 md:h-16',
-    lg: 'w-20 h-20 md:w-24 md:h-24',
+    sm: 'w-9 h-9',
+    md: 'w-11 h-11 sm:w-12 sm:h-12 md:w-13 md:h-13',
+    lg: 'w-18 h-18 md:w-22 md:h-22',
   }[size];
 
   const titleSizes = {
-    sm: 'text-lg',
-    md: 'text-2xl md:text-3xl',
-    lg: 'text-3xl md:text-4xl',
+    sm: 'text-base sm:text-lg',
+    md: 'text-xl sm:text-2xl md:text-[25px]',
+    lg: 'text-2xl md:text-3xl lg:text-4xl',
   }[size];
 
   const subtitleSizes = {
-    sm: 'text-[9px]',
-    md: 'text-[10px] md:text-xs',
+    sm: 'text-[8.5px]',
+    md: 'text-[9px] sm:text-[10px] md:text-[10.5px]',
     lg: 'text-xs',
   }[size];
 
@@ -150,7 +152,7 @@ export default function AnimatedLogo({
       )}
 
       {/* Brand Name & Warm Ochre Subtitle */}
-      <div className="flex flex-col leading-none">
+      <div className="flex flex-col leading-none shrink-0">
         <div className="flex items-center gap-1">
           <span className={`font-display ${titleSizes} font-extrabold tracking-tight transition-colors ${isDark ? 'text-white' : 'text-slate-900 group-hover:text-brand-600'
             }`}>
@@ -162,17 +164,17 @@ export default function AnimatedLogo({
         </div>
 
         {showSubtitle && (
-          <span className={`hidden sm:flex font-bold ${subtitleSizes} uppercase tracking-wider mt-1.5 items-center gap-1.5 ${isDark ? 'text-slate-300' : 'text-slate-600 group-hover:text-slate-900'
+          <span className={`hidden sm:inline-flex font-bold ${subtitleSizes} uppercase tracking-wider mt-1 items-center gap-1.5 whitespace-nowrap ${isDark ? 'text-slate-300' : 'text-slate-600 group-hover:text-slate-900'
             } transition-colors`}>
             {/* Spinning Timber Saw Icon */}
-            <span className="relative flex h-3.5 w-3.5 items-center justify-center shrink-0">
-              <svg className="w-3.5 h-3.5 text-brand-500 animate-saw-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <span className="relative flex h-3 w-3 sm:h-3.5 sm:w-3.5 items-center justify-center shrink-0">
+              <svg className="w-full h-full text-brand-500 animate-saw-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="12" cy="12" r="9" strokeWidth="1.5" strokeDasharray="3 2" />
                 <path d="M12 7v10M7 12h10" stroke="#C27D38" strokeWidth="2" />
                 <circle cx="12" cy="12" r="2" fill="currentColor" />
               </svg>
             </span>
-            <span className="font-bold text-brand-600">By Shiva · Huts, Chicks &amp; Shiva Fabrication</span>
+            <span className="font-bold text-brand-600">{subtitle}</span>
           </span>
         )}
       </div>

@@ -70,7 +70,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
   function handleLogout() {
     logout();
-    navigate('/admin/login');
+    navigate('/login');
   }
 
   const getPageTitle = () => {

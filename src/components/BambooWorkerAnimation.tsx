@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Hammer } from 'lucide-react';
 
 interface BambooWorkerAnimationProps {
   className?: string;
@@ -31,7 +30,7 @@ export default function BambooWorkerAnimation({
       title="Craftsman Shiva actively assembling bamboo architecture"
     >
       {/* Compact SVG Artwork Canvas with Active Working Motions */}
-      <div className={`relative ${containerSizes} transition-transform duration-200 group-hover:scale-105`}>
+      <div className={`relative ${containerSizes} transition-transform duration-200 ${isTapped ? 'scale-105' : 'group-hover:scale-105'}`}>
         <svg
           viewBox="0 0 540 400"
           className="w-full h-full overflow-visible drop-shadow-xl"

@@ -4,6 +4,7 @@ import confetti from 'canvas-confetti';
 import type { CartItem, Order, PaymentMethod } from '../types';
 import { api } from '../services/api';
 import { generateTransactionId } from '../data/sampleOrders';
+import { useCustomerAuth } from '../context/CustomerAuthContext';
 
 interface CheckoutModalProps {
   open: boolean;
@@ -15,6 +16,7 @@ interface CheckoutModalProps {
 const BANKS = ['HDFC Bank', 'ICICI Bank', 'SBI', 'Axis Bank', 'Kotak Mahindra'];
 
 export default function CheckoutModal({ open, items, onClose, onComplete }: CheckoutModalProps) {
+  const { customerUser } = useCustomerAuth();
   const [step, setStep] = useState(1);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('UPI');
   const [loading, setLoading] = useState(false);
@@ -38,6 +40,20 @@ export default function CheckoutModal({ open, items, onClose, onComplete }: Chec
     cardCvv: '',
     bank: BANKS[0],
   });
+
+  useEffect(() => {
+    if (open && customerUser) {
+      setForm((prev) => ({
+        ...prev,
+        name: prev.name || customerUser.name || '',
+        phone: prev.phone || customerUser.phone || '',
+        email: prev.email || customerUser.email || '',
+        city: prev.city || customerUser.city || 'Noida',
+        street: prev.street || customerUser.address || '',
+        pincode: prev.pincode || customerUser.pincode || '',
+      }));
+    }
+  }, [open, customerUser]);
 
   const subtotal = items.reduce((s, i) => s + i.totalPrice, 0);
   const discount = Math.round(subtotal * 0.1);

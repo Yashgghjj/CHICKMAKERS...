@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ShoppingCart, Package, Ruler, Menu, X, Phone, ShieldCheck } from 'lucide-react';
+import { ShoppingCart, Package, Ruler, Menu, X, Phone, ShieldCheck, User } from 'lucide-react';
 import AnimatedLogo from './AnimatedLogo';
+import { useAuth } from '../context/AuthContext';
 
 interface HeaderProps {
   cartCount: number;
   onCartOpen: () => void;
+  onOpenCustomerAuth?: () => void;
 }
 
 const NAV_LINKS = [
@@ -17,9 +19,10 @@ const NAV_LINKS = [
   { label: 'FAQ', to: '/faq' },
 ];
 
-export default function Header({ cartCount, onCartOpen }: HeaderProps) {
+export default function Header({ cartCount, onCartOpen, onOpenCustomerAuth }: HeaderProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { pathname } = useLocation();
+  const { user, role } = useAuth();
 
   return (
     <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-lg border-b border-stone-200/60 shadow-sm">
@@ -46,24 +49,26 @@ export default function Header({ cartCount, onCartOpen }: HeaderProps) {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
-        <div className="flex items-center justify-between h-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-[72px] sm:h-20 gap-2 sm:gap-4">
           
-          {/* Animated Logo */}
-          <AnimatedLogo size="md" showSubtitle={true} variant="light" />
+          {/* Animated Logo with safe shrink-0 */}
+          <div className="shrink-0 flex items-center">
+            <AnimatedLogo size="md" showSubtitle={true} variant="light" />
+          </div>
 
           {/* Desktop nav */}
-          <nav className="hidden md:flex items-center gap-0.5 lg:gap-1 bg-stone-100/60 p-1 rounded-full border border-stone-200/60 backdrop-blur-xs">
+          <nav className="hidden md:flex items-center gap-0.5 lg:gap-1 bg-stone-100/70 p-1 rounded-full border border-stone-200/70 backdrop-blur-xs shadow-2xs">
             {NAV_LINKS.map((link) => {
               const isActive = pathname === link.to;
               return (
                 <Link
                   key={link.to}
                   to={link.to}
-                  className={`text-xs lg:text-sm font-medium px-2.5 lg:px-3.5 py-1.5 rounded-full transition-all duration-200 whitespace-nowrap ${
+                  className={`text-[11px] lg:text-xs xl:text-sm font-medium px-2.5 lg:px-3 xl:px-3.5 py-1.5 rounded-full transition-all duration-200 whitespace-nowrap ${
                     isActive
                       ? 'text-white bg-[#E85D26] font-semibold shadow-xs'
-                      : 'text-stone-700 hover:text-stone-950 hover:bg-white/80'
+                      : 'text-stone-700 hover:text-stone-950 hover:bg-white/90'
                   }`}
                 >
                   {link.label}
@@ -73,12 +78,47 @@ export default function Header({ cartCount, onCartOpen }: HeaderProps) {
           </nav>
 
           {/* Action buttons */}
-          <div className="flex items-center gap-1.5 sm:gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             
-            {/* Book Visit: High-conversion glowing pill button (No text wrap) */}
+            {/* Account / Sign In Pill */}
+            {user ? (
+              role === 'admin' ? (
+                <Link
+                  to="/admin"
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-950 bg-amber-100 hover:bg-amber-200/90 px-3 py-2 rounded-full border border-amber-300 transition-all duration-200 whitespace-nowrap active:scale-95 shadow-2xs group"
+                  title="Artisan Admin Portal"
+                >
+                  <ShieldCheck className="w-3.5 h-3.5 text-amber-700" />
+                  <span className="hidden sm:inline font-bold">Admin Panel</span>
+                </Link>
+              ) : (
+                <Link
+                  to="/account"
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-stone-800 bg-stone-100 hover:bg-stone-200/90 px-3 py-2 rounded-full border border-stone-200/80 transition-all duration-200 whitespace-nowrap active:scale-95 shadow-2xs group"
+                  title={`Signed in as ${user.name}`}
+                >
+                  <div className="w-4.5 h-4.5 rounded-full bg-brand-500 text-white flex items-center justify-center font-bold text-[10px] shadow-xs">
+                    {user.name.charAt(0).toUpperCase()}
+                  </div>
+                  <span className="hidden sm:inline font-medium max-w-[80px] truncate">{user.name.split(' ')[0]}</span>
+                </Link>
+              )
+            ) : (
+              <button
+                type="button"
+                onClick={onOpenCustomerAuth}
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-stone-700 hover:text-stone-950 bg-stone-100/80 hover:bg-stone-200/80 px-3 py-2 rounded-full border border-stone-200/70 transition-all duration-200 whitespace-nowrap active:scale-95 shadow-2xs"
+                title="Sign In or Register"
+              >
+                <User className="w-3.5 h-3.5 text-stone-500" />
+                <span className="hidden sm:inline">Sign In</span>
+              </button>
+            )}
+
+            {/* Book Visit: High-conversion glowing pill button */}
             <Link
               to="/book-measurement"
-              className="hidden sm:inline-flex items-center gap-1.5 text-xs lg:text-sm font-bold text-white bg-gradient-to-r from-[#E85D26] to-[#D94E18] hover:from-[#D94E18] hover:to-[#C43E0D] px-3.5 py-2 rounded-full shadow-sm hover:shadow-md hover:shadow-orange-600/25 transition-all duration-200 active:scale-95 whitespace-nowrap border border-orange-400/30 group"
+              className="hidden sm:inline-flex items-center gap-1.5 text-xs lg:text-sm font-bold text-white bg-gradient-to-r from-[#E85D26] to-[#D94E18] hover:from-[#D94E18] hover:to-[#C43E0D] px-3.5 py-2 rounded-full shadow-sm hover:shadow-md hover:shadow-orange-600/20 transition-all duration-200 active:scale-95 whitespace-nowrap border border-orange-400/30 group"
             >
               <Ruler className="w-3.5 h-3.5 text-orange-200 group-hover:rotate-12 transition-transform duration-200" />
               <span>Book Visit</span>
@@ -87,7 +127,7 @@ export default function Header({ cartCount, onCartOpen }: HeaderProps) {
             {/* Track Order: Refined tactile pill */}
             <Link
               to="/track"
-              className="hidden lg:inline-flex items-center gap-1.5 text-xs lg:text-sm font-medium text-stone-700 hover:text-stone-900 bg-stone-100/80 hover:bg-stone-200/80 px-3 py-2 rounded-full border border-stone-200/70 transition-all duration-200 whitespace-nowrap active:scale-95"
+              className="hidden xl:inline-flex items-center gap-1.5 text-xs lg:text-sm font-medium text-stone-700 hover:text-stone-900 bg-stone-100/80 hover:bg-stone-200/80 px-3 py-2 rounded-full border border-stone-200/70 transition-all duration-200 whitespace-nowrap active:scale-95"
             >
               <Package className="w-3.5 h-3.5 text-stone-500" />
               <span>Track</span>
@@ -96,15 +136,15 @@ export default function Header({ cartCount, onCartOpen }: HeaderProps) {
             {/* Admin Portal Button */}
             <Link
               to="/admin"
-              className="inline-flex items-center gap-1.5 text-xs lg:text-sm font-semibold text-amber-900 bg-amber-100/90 hover:bg-amber-200 px-3 py-2 rounded-full border border-amber-300/80 transition-all duration-200 whitespace-nowrap active:scale-95 shadow-xs"
+              className="hidden xl:inline-flex items-center gap-1.5 text-xs font-semibold text-amber-900 bg-amber-50 hover:bg-amber-100/80 px-3 py-2 rounded-full border border-amber-200/80 transition-all duration-200 whitespace-nowrap active:scale-95 shadow-2xs"
               title="Artisan Admin Portal"
             >
               <ShieldCheck className="w-3.5 h-3.5 text-amber-700" />
-              <span className="hidden sm:inline">Admin</span>
+              <span>Admin</span>
             </Link>
 
             {/* Subtle Divider */}
-            <div className="hidden sm:block h-6 w-px bg-stone-200 mx-0.5" />
+            <div className="hidden sm:block h-5 w-px bg-stone-200 mx-0.5" />
 
             {/* Cart Button: Refined circular icon button with badge */}
             <button
@@ -137,6 +177,48 @@ export default function Header({ cartCount, onCartOpen }: HeaderProps) {
       {mobileOpen && (
         <div className="md:hidden border-t border-stone-200 bg-white animate-fade-in">
           <nav className="max-w-7xl mx-auto px-4 py-4 flex flex-col gap-1">
+            {/* Account on Mobile */}
+            {user ? (
+              role === 'admin' ? (
+                <Link
+                  to="/admin"
+                  onClick={() => setMobileOpen(false)}
+                  className="flex items-center justify-between text-sm font-semibold text-amber-900 bg-amber-100/90 px-3 py-2.5 rounded-xl border border-amber-300 mb-1"
+                >
+                  <div className="flex items-center gap-2">
+                    <ShieldCheck className="w-4 h-4 text-amber-700" />
+                    <span>Admin Panel ({user.name.split(' ')[0]})</span>
+                  </div>
+                  <span className="text-xs font-bold text-amber-800">Dashboard &rarr;</span>
+                </Link>
+              ) : (
+                <Link
+                  to="/account"
+                  onClick={() => setMobileOpen(false)}
+                  className="flex items-center justify-between text-sm font-semibold text-stone-800 bg-stone-50 px-3 py-2.5 rounded-xl border border-stone-200 mb-1"
+                >
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 rounded-full bg-brand-500 text-white flex items-center justify-center font-bold text-xs">
+                      {user.name.charAt(0).toUpperCase()}
+                    </div>
+                    <span>{user.name}</span>
+                  </div>
+                  <span className="text-xs font-bold text-brand-600">My Orders &rarr;</span>
+                </Link>
+              )
+            ) : (
+              <button
+                type="button"
+                onClick={() => {
+                  setMobileOpen(false);
+                  onOpenCustomerAuth?.();
+                }}
+                className="flex items-center gap-2 text-sm font-semibold text-brand-600 bg-brand-50 px-3 py-2.5 rounded-xl border border-brand-200 mb-1 text-left w-full"
+              >
+                <User className="w-4 h-4 text-brand-600" /> Sign In / Create Account
+              </button>
+            )}
+
             {NAV_LINKS.map((link) => {
               const isActive = pathname === link.to;
               return (

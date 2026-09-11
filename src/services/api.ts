@@ -8,17 +8,30 @@ import type {
   AdminStats,
   AdminSettings,
   CustomerUser,
+  CustomerAccount,
+  SmartAuthResult,
+  AuthUser,
   Inquiry,
 } from '../types';
-import { ADMIN_TOKEN_KEY } from '../types';
+import { AUTH_TOKEN_KEY, ADMIN_TOKEN_KEY, CUSTOMER_TOKEN_KEY } from '../types';
 
 const API_BASE = '';
 
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
-  const token = typeof window !== 'undefined' ? localStorage.getItem(ADMIN_TOKEN_KEY) : null;
+  let token: string | null = null;
+  if (typeof window !== 'undefined') {
+    token =
+      localStorage.getItem(AUTH_TOKEN_KEY) ||
+      localStorage.getItem(ADMIN_TOKEN_KEY) ||
+      localStorage.getItem(CUSTOMER_TOKEN_KEY);
+  }
+
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
-    ...(token ? { Authorization: `Bearer ${token}`, 'x-admin-token': token } : {}),
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    ...(token ? { 'x-auth-token': token } : {}),
+    ...(token ? { 'x-admin-token': token } : {}),
+    ...(token ? { 'x-customer-token': token } : {}),
     ...(options?.headers as Record<string, string> || {}),
   };
 
@@ -92,7 +105,7 @@ export const api = {
 
   // Admin APIs
   adminLogin: (email: string, password: string) =>
-    request<{ success: boolean; token: string; user: AdminUser; message: string }>('/api/admin/login', {
+    request<SmartAuthResult>('/api/admin/login', {
       method: 'POST',
       body: JSON.stringify({ email, password }),
     }),
@@ -170,4 +183,75 @@ export const api = {
       method: 'POST',
       body: JSON.stringify(settings),
     }),
+
+  // ─── Customer Authentication APIs ───────────────────────────
+  customerSignup: (payload: {
+    name: string;
+    email?: string;
+    phone?: string;
+    password: string;
+    city?: string;
+    address?: string;
+    pincode?: string;
+  }) =>
+    request<{ success: boolean; token: string; user: CustomerAccount; message: string }>('/api/customer/signup', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
+
+  customerLogin: (payload: { identifier?: string; email?: string; phone?: string; password: string }) =>
+    request<SmartAuthResult>('/api/customer/login', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
+
+  // ─── Unified Authentication APIs (Common for Customers & Admins) ───
+  authLogin: (payload: { identifier?: string; email?: string; phone?: string; password: string }) =>
+    request<SmartAuthResult>('/api/auth/login', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
+
+  authSignup: (payload: {
+    name: string;
+    email?: string;
+    phone?: string;
+    password: string;
+    city?: string;
+    address?: string;
+    pincode?: string;
+  }) =>
+    request<{ success: boolean; token: string; role: 'customer'; redirectTo: string; user: AuthUser; message: string }>('/api/auth/signup', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
+
+  authGetMe: () => request<{ success: boolean; user: AuthUser; role: 'admin' | 'customer' }>('/api/auth/me'),
+
+  authLogout: () =>
+    request<{ success: boolean; message: string }>('/api/auth/logout', {
+      method: 'POST',
+    }),
+
+  // Unified Smart Login alias (Auto-configures Admin vs Customer)
+  smartLogin: (payload: { identifier?: string; email?: string; phone?: string; password: string }) =>
+    request<SmartAuthResult>('/api/auth/login', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
+
+  customerLogout: () =>
+    request<{ success: boolean; message: string }>('/api/customer/logout', {
+      method: 'POST',
+    }),
+
+  customerGetMe: () => request<{ success: boolean; user: CustomerAccount }>('/api/customer/me'),
+
+  customerUpdateProfile: (payload: Partial<CustomerAccount>) =>
+    request<{ success: boolean; user: CustomerAccount; message: string }>('/api/customer/profile', {
+      method: 'PUT',
+      body: JSON.stringify(payload),
+    }),
+
+  customerGetOrders: () => request<{ success: boolean; orders: Order[] }>('/api/customer/orders'),
 };
