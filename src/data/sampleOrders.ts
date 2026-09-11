@@ -50,20 +50,22 @@ export function getRandomTechnician() {
   return TECHNICIANS[Math.floor(Math.random() * TECHNICIANS.length)];
 }
 
-export const SAMPLE_ORDERS: Order[] = [
-  {
-    id: 'ord-1042',
-    orderNumber: 'CHK-2026-1042',
-    createdAt: '2026-08-20T10:30:00.000Z',
-    customerName: 'Amit Verma',
-    customerPhone: '9811244321',
-    customerEmail: 'amit.verma99@gmail.com',
+export function createFreshSampleOrder(): Order {
+  const orderNum = generateOrderNumber();
+  const id = generateOrderId();
+  return {
+    id,
+    orderNumber: orderNum,
+    createdAt: new Date().toISOString(),
+    customerName: 'Rohit Sharma',
+    customerPhone: '9810123456',
+    customerEmail: 'rohit.sharma@gmail.com',
     shippingAddress: {
-      street: 'Tower B, Flat 1204, Supertech Ecociti',
-      city: 'Noida',
+      street: 'Flat 402, Tower 4, Paramount Golf Foreste',
+      city: 'Greater Noida',
       state: 'Uttar Pradesh',
-      pincode: '201301',
-      landmark: 'Near Sector 93A Metro',
+      pincode: '201308',
+      landmark: 'Near Zeta 1',
     },
     items: [
       {
@@ -77,13 +79,13 @@ export const SAMPLE_ORDERS: Order[] = [
           minSqFt: 12,
           warrantyYears: 5,
           estimatedCraftDays: 2,
-          description: '',
-          features: [],
-          materials: [],
-          image: '',
+          description: 'Finest handwoven Assam bamboo slats with UV protective varnish.',
+          features: ['Assam Cane', 'Brass Pulley System', '5-Year Durability'],
+          materials: ['Natural Bamboo', 'Cotton Cord', 'Brass'],
+          image: '/img/our-services/bamboo-chick.jpg',
         },
         config: {
-          widthFeet: 10,
+          widthFeet: 8,
           widthInches: 0,
           heightFeet: 6,
           heightInches: 0,
@@ -93,25 +95,27 @@ export const SAMPLE_ORDERS: Order[] = [
           includeInstallation: true,
         },
         quantity: 2,
-        unitPrice: 5120,
-        totalPrice: 10240,
-        dimensionsSummary: '10\'0" × 6\'0" (60 sq.ft)',
+        unitPrice: 4200,
+        totalPrice: 8400,
+        dimensionsSummary: '8\'0" × 6\'0" (48 sq.ft)',
       },
     ],
-    subtotal: 10240,
-    discount: 1024,
-    tax: 460.8,
-    deliveryAndFittingFee: 0,
-    totalAmount: 9676.8,
+    subtotal: 8400,
+    discount: 500,
+    tax: 395,
+    deliveryAndFittingFee: 350,
+    totalAmount: 8645,
     paymentMethod: 'UPI',
     paymentStatus: 'PAID',
-    transactionId: 'TXN202608201030001',
-    currentStatus: 'WEAVING_IN_PROGRESS',
-    estimatedCompletion: '2026-08-28',
-    technician: TECHNICIANS[0],
-    timeline: buildTimeline('WEAVING_IN_PROGRESS'),
-  },
-];
+    transactionId: generateTransactionId(),
+    currentStatus: 'CONFIRMED',
+    estimatedCompletion: new Date(Date.now() + 5 * 86400000).toISOString().split('T')[0],
+    technician: getRandomTechnician(),
+    timeline: buildTimeline('CONFIRMED'),
+  };
+}
+
+export const SAMPLE_ORDERS: Order[] = [];
 
 export function loadOrdersFromStorage(): Order[] {
   try {

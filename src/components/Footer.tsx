@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Phone, Mail, MapPin } from 'lucide-react';
+import { Phone, Mail, MapPin, Lock } from 'lucide-react';
 import AnimatedLogo from './AnimatedLogo';
 import BambooWorkerAnimation from './BambooWorkerAnimation';
 
@@ -65,8 +65,17 @@ export default function Footer() {
             </ul>
           </div>
         </div>
-        <div className="border-t border-sage-800 pt-6 text-center text-xs text-stone-400">
-          © 2026 Bamboo Chick Maker &amp; Shiva Fabrication. Handcrafted Bamboo Architecture &amp; Metal Structures. All Rights Reserved.
+        <div className="border-t border-sage-800 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left text-xs text-stone-400">
+          <div>
+            © 2026 Bamboo Chick Maker &amp; Shiva Fabrication. Handcrafted Bamboo Architecture &amp; Metal Structures. All Rights Reserved.
+          </div>
+          <Link
+            to="/admin"
+            className="inline-flex items-center gap-1.5 text-stone-400 hover:text-amber-400 font-medium transition"
+          >
+            <Lock className="w-3.5 h-3.5" />
+            <span>Artisan Admin Portal</span>
+          </Link>
         </div>
       </div>
     </footer>

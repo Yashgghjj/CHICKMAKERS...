@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import CartDrawer from './components/CartDrawer';
@@ -16,6 +16,18 @@ import ReviewsPage from './pages/ReviewsPage';
 import FAQPage from './pages/FAQPage';
 import TrackOrderPage from './pages/TrackOrderPage';
 import BookMeasurementPage from './pages/BookMeasurementPage';
+
+// Admin Imports
+import { AdminAuthProvider } from './context/AdminAuthContext';
+import AdminProtectedRoute from './components/admin/AdminProtectedRoute';
+import AdminLoginPage from './pages/admin/AdminLoginPage';
+import AdminDashboardPage from './pages/admin/AdminDashboardPage';
+import AdminProductsPage from './pages/admin/AdminProductsPage';
+import AdminOrdersPage from './pages/admin/AdminOrdersPage';
+import AdminUsersPage from './pages/admin/AdminUsersPage';
+import AdminAppointmentsPage from './pages/admin/AdminAppointmentsPage';
+import AdminSettingsPage from './pages/admin/AdminSettingsPage';
+
 import type { CartItem, Product, Order } from './types';
 import { CART_STORAGE_KEY } from './types';
 import { saveOrderToFirestore } from './lib/firestoreService';
@@ -29,6 +41,9 @@ function AppContent() {
   const [lastOrder, setLastOrder] = useState<Order | null>(null);
   const [invoiceOrder, setInvoiceOrder] = useState<Order | null>(null);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const isAdminRoute = location.pathname.startsWith('/admin');
 
   useEffect(() => {
     try {
@@ -81,6 +96,27 @@ function AppContent() {
     navigate('/track');
   }
 
+  // Admin routing branch
+  if (isAdminRoute) {
+    return (
+      <Routes>
+        <Route path="/admin/login" element={<AdminLoginPage />} />
+        <Route path="/admin" element={<AdminProtectedRoute />}>
+          <Route index element={<AdminDashboardPage />} />
+          <Route path="dashboard" element={<AdminDashboardPage />} />
+          <Route path="products" element={<AdminProductsPage />} />
+          <Route path="orders" element={<AdminOrdersPage />} />
+          <Route path="users" element={<AdminUsersPage />} />
+          <Route path="appointments" element={<AdminAppointmentsPage />} />
+          <Route path="settings" element={<AdminSettingsPage />} />
+          <Route path="*" element={<Navigate to="/admin" replace />} />
+        </Route>
+        <Route path="*" element={<Navigate to="/admin" replace />} />
+      </Routes>
+    );
+  }
+
+  // Public Storefront branch
   return (
     <div className="min-h-screen flex flex-col">
       <Header
@@ -181,7 +217,9 @@ function AppContent() {
 export default function App() {
   return (
     <BrowserRouter>
-      <AppContent />
+      <AdminAuthProvider>
+        <AppContent />
+      </AdminAuthProvider>
     </BrowserRouter>
   );
 }

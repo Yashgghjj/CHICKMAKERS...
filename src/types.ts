@@ -11,10 +11,18 @@ export type PaymentMethod = 'UPI' | 'CARD' | 'NETBANKING' | 'COD';
 export type PaymentStatus = 'PAID' | 'PENDING' | 'ADVANCE_PAID';
 export type Mechanism = 'standard' | 'brass-pulley' | 'nylon-pulley' | 'somfy-motor';
 
+export type ProductCategory =
+  | 'bamboo-chick'
+  | 'bamboo-huts'
+  | 'safety-nets'
+  | 'welding-structure'
+  | 'artificial-grass'
+  | string;
+
 export interface Product {
   id: string;
   name: string;
-  category: string;
+  category: ProductCategory;
   pricePerSqFt: number;
   minSqFt: number;
   warrantyYears: number;
@@ -68,6 +76,15 @@ export interface CartItem {
   unitPrice: number;
   totalPrice: number;
   dimensionsSummary: string;
+  productName?: string;
+  dimensions?: {
+    widthFeet?: number;
+    widthInches?: number;
+    heightFeet?: number;
+    heightInches?: number;
+  };
+  billingSqFt?: number;
+  addons?: string[];
 }
 
 export interface ShippingAddress {
@@ -198,3 +215,58 @@ export const COUPONS: Record<string, { percent: number; minOrder: number }> = {
 export const GST_RATE = 0.05;
 export const CART_STORAGE_KEY = 'chickmakers_cart';
 export const ORDERS_STORAGE_KEY = 'chickmakers_orders_v2';
+export const ADMIN_TOKEN_KEY = 'chickmakers_admin_token';
+export const ADMIN_USER_KEY = 'chickmakers_admin_user';
+export const ADMIN_SETTINGS_KEY = 'chickmakers_admin_settings';
+export const ADMIN_PRODUCTS_STORAGE_KEY = 'chickmakers_admin_products_v1';
+
+export interface AdminUser {
+  id: string;
+  name: string;
+  email: string;
+  role: 'superadmin' | 'manager' | 'artisan';
+  avatar?: string;
+  phone?: string;
+}
+
+export interface CustomerUser {
+  id: string;
+  name: string;
+  phone: string;
+  email?: string;
+  city: string;
+  address?: string;
+  totalOrders: number;
+  totalSpent: number;
+  lastActive: string;
+  source: 'order' | 'appointment' | 'inquiry' | 'manual';
+  notes?: string;
+}
+
+export interface AdminStats {
+  totalRevenue: number;
+  totalOrders: number;
+  pendingOrders: number;
+  completedOrders: number;
+  totalProducts: number;
+  totalCustomers: number;
+  totalAppointments: number;
+  revenueByMonth: { month: string; revenue: number; orders: number }[];
+  ordersByStatus: { status: OrderStatus; count: number }[];
+  topCategories: { category: string; sales: number; count: number }[];
+}
+
+export interface AdminSettings {
+  businessName: string;
+  founderName: string;
+  contactPhone: string;
+  whatsappPhone: string;
+  supportEmail: string;
+  workshopAddress: string;
+  operatingHours: string;
+  minOrderValue: number;
+  deliveryAndFittingFee: number;
+  enableNotifications: boolean;
+  orderAlertSound: boolean;
+  adminPassword?: string;
+}
