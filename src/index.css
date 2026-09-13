@@ -37,45 +37,22 @@
   --animate-scale-in: scaleIn 0.3s ease-out both;
   --animate-shimmer: shimmer 1.2s ease-in-out infinite;
   --animate-logo-float: logoFloat 3.5s ease-in-out infinite;
-  --animate-saw-stroke: sawStroke 2.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-  --animate-saw-spin: sawSpin 0.7s linear infinite;
-  --animate-sawdust: sawdustFly 1.5s ease-out infinite;
-  --animate-log-top: logTopSplit 2.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-  --animate-log-bottom: logBottomSplit 2.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-  --animate-spark-1: sparkFly1 1.2s ease-out infinite;
-  --animate-spark-2: sparkFly2 1.4s ease-out infinite;
-  --animate-spark-3: sparkFly3 1.1s ease-out infinite;
+  --animate-saw-spin: sawSpin 2.4s linear infinite;
+  --animate-saw-spin-fast: sawSpin 0.5s linear infinite;
+  --animate-saw-stroke: sawTraverse 2.4s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+  --animate-friction-glow: frictionGlow 1.8s ease-in-out infinite;
+  --animate-ember-drift: emberDrift 1.2s ease-out infinite;
 }
 
-/* ── Wood Log Physical Splitting Keyframes ── */
-@keyframes logTopSplit {
-  0%, 100% {
-    transform: translate(0px, 0px) rotate(0deg);
-  }
-  45%, 65% {
-    transform: translate(-3px, -4px) rotate(-2deg);
-  }
-}
-
-@keyframes logBottomSplit {
-  0%, 100% {
-    transform: translate(0px, 0px) rotate(0deg);
-  }
-  45%, 65% {
-    transform: translate(3px, 4px) rotate(2deg);
-  }
-}
-
-/* ── Wood Log Cutting Saw Animation Keyframes ── */
-@keyframes sawStroke {
+@keyframes sawTraverse {
   0% {
-    transform: translate(-4px, 2px) rotate(-8deg);
+    transform: translateX(-10%);
   }
-  50% {
-    transform: translate(28px, -4px) rotate(16deg);
+  48%, 52% {
+    transform: translateX(28%);
   }
   100% {
-    transform: translate(-4px, 2px) rotate(-8deg);
+    transform: translateX(-10%);
   }
 }
 
@@ -88,64 +65,28 @@
   }
 }
 
-@keyframes sparkFly1 {
-  0% {
-    opacity: 0;
-    transform: translate(0px, 0px) scale(0.5);
+@keyframes frictionGlow {
+  0%, 100% {
+    opacity: 0.65;
+    filter: drop-shadow(0 0 4px rgba(245, 158, 11, 0.6));
   }
-  20% {
+  50% {
     opacity: 1;
-  }
-  100% {
-    opacity: 0;
-    transform: translate(25px, -22px) scale(1.4);
+    filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.95));
   }
 }
 
-@keyframes sparkFly2 {
+@keyframes emberDrift {
   0% {
     opacity: 0;
-    transform: translate(0px, 0px) scale(0.5);
+    transform: translate(0, 0) scale(0.6);
   }
-  20% {
+  25% {
     opacity: 1;
   }
   100% {
     opacity: 0;
-    transform: translate(32px, 15px) scale(1.2);
-  }
-}
-
-@keyframes sparkFly3 {
-  0% {
-    opacity: 0;
-    transform: translate(0px, 0px) scale(0.5);
-  }
-  20% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-    transform: translate(18px, -35px) scale(1.6);
-  }
-}
-
-@keyframes sawdustFly {
-  0% {
-    opacity: 0;
-    transform: translate(0px, 0px) scale(0.5);
-  }
-  30% {
-    opacity: 1;
-    transform: translate(12px, -14px) scale(1.2);
-  }
-  70% {
-    opacity: 0.8;
-    transform: translate(22px, -24px) scale(0.8);
-  }
-  100% {
-    opacity: 0;
-    transform: translate(30px, -32px) scale(0.2);
+    transform: translate(-14px, -4px) scale(1.1);
   }
 }
 

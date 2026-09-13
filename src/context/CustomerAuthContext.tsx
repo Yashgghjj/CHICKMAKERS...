@@ -7,7 +7,7 @@ export function CustomerAuthProvider({ children }: { children: ReactNode }) {
 }
 
 export function useCustomerAuth() {
-  const { customerUser, token, isLoading, login, signup, logout, updateProfile } = useAuth();
+  const { customerUser, token, isLoading, login, signup, loginWithGoogle, logout, updateProfile } = useAuth();
 
   return {
     customerUser,
@@ -19,6 +19,7 @@ export function useCustomerAuth() {
         credentials.password
       ),
     signup,
+    loginWithGoogle,
     logout,
     updateProfile: (updates: Partial<CustomerAccount>) => updateProfile(updates),
   };

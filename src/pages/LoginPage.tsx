@@ -16,6 +16,7 @@ import {
 import { useAuth } from '../context/AuthContext';
 import AnimatedLogo from '../components/AnimatedLogo';
 import PageTransition from '../components/PageTransition';
+import GoogleSignInModal, { GoogleIcon } from '../components/GoogleSignInModal';
 
 interface LoginPageProps {
   defaultTab?: 'login' | 'signup';
@@ -32,6 +33,7 @@ export default function LoginPage({ defaultTab = 'login' }: LoginPageProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [showGoogleModal, setShowGoogleModal] = useState(false);
 
   // Sign In inputs
   const [identifier, setIdentifier] = useState('');
@@ -273,6 +275,23 @@ export default function LoginPage({ defaultTab = 'login' }: LoginPageProps) {
                   )}
                 </button>
 
+                {/* Google / Gmail Authentication Option - Placed After Sign In Button */}
+                <div className="relative my-4 flex items-center justify-center">
+                  <div className="border-t border-stone-800 w-full" />
+                  <span className="bg-stone-950 px-3 text-[11px] font-medium text-stone-400 uppercase tracking-wider whitespace-nowrap absolute">
+                    or sign in with
+                  </span>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setShowGoogleModal(true)}
+                  className="w-full flex items-center justify-center gap-3 py-3 px-4 bg-white hover:bg-stone-100 active:scale-[0.99] text-stone-900 font-bold text-xs sm:text-sm rounded-xl border border-stone-200 shadow-sm transition-all duration-200 cursor-pointer"
+                >
+                  <GoogleIcon className="w-5 h-5" />
+                  <span>Continue with Google / Gmail</span>
+                </button>
+
                 {/* 1-Click Quick Testing Helpers */}
                 <div className="mt-5 pt-4 border-t border-stone-800 text-center">
                   <p className="text-[11px] text-stone-400 mb-2 font-medium">Quick Demo Sign-In:</p>
@@ -408,6 +427,23 @@ export default function LoginPage({ defaultTab = 'login' }: LoginPageProps) {
                 >
                   {loading ? 'Creating Account...' : 'Create Customer Account'}
                 </button>
+
+                {/* Google / Gmail Quick Authentication Button - Placed After Submit */}
+                <div className="relative my-4 flex items-center justify-center">
+                  <div className="border-t border-stone-800 w-full" />
+                  <span className="bg-stone-950 px-3 text-[11px] font-medium text-stone-400 uppercase tracking-wider whitespace-nowrap absolute">
+                    or sign up with
+                  </span>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setShowGoogleModal(true)}
+                  className="w-full flex items-center justify-center gap-3 py-3 px-4 bg-white hover:bg-stone-100 active:scale-[0.99] text-stone-900 font-bold text-xs sm:text-sm rounded-xl border border-stone-200 shadow-sm transition-all duration-200 cursor-pointer"
+                >
+                  <GoogleIcon className="w-5 h-5" />
+                  <span>Sign up with Google / Gmail</span>
+                </button>
               </form>
             )}
 
@@ -433,6 +469,11 @@ export default function LoginPage({ defaultTab = 'login' }: LoginPageProps) {
           </div>
         </div>
       </div>
+
+      <GoogleSignInModal
+        open={showGoogleModal}
+        onClose={() => setShowGoogleModal(false)}
+      />
     </PageTransition>
   );
 }

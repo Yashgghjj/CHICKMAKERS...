@@ -37,14 +37,18 @@ export default function Header({ cartCount, onCartOpen, onOpenCustomerAuth }: He
           </span>
           <div className="flex items-center gap-3">
             <span className="text-stone-300">Greater Noida · Noida · Delhi NCR</span>
-            <span className="text-stone-500">|</span>
-            <Link
-              to="/admin"
-              className="inline-flex items-center gap-1 text-amber-300 hover:text-amber-100 font-semibold transition"
-            >
-              <ShieldCheck className="w-3.5 h-3.5 text-amber-400" />
-              <span>Admin Portal</span>
-            </Link>
+            {role === 'admin' && (
+              <>
+                <span className="text-stone-500">|</span>
+                <Link
+                  to="/admin"
+                  className="inline-flex items-center gap-1 text-amber-300 hover:text-amber-100 font-semibold transition"
+                >
+                  <ShieldCheck className="w-3.5 h-3.5 text-amber-400" />
+                  <span>Admin Panel</span>
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -104,15 +108,14 @@ export default function Header({ cartCount, onCartOpen, onOpenCustomerAuth }: He
                 </Link>
               )
             ) : (
-              <button
-                type="button"
-                onClick={onOpenCustomerAuth}
+              <Link
+                to="/login"
                 className="inline-flex items-center gap-1.5 text-xs font-semibold text-stone-700 hover:text-stone-950 bg-stone-100/80 hover:bg-stone-200/80 px-3 py-2 rounded-full border border-stone-200/70 transition-all duration-200 whitespace-nowrap active:scale-95 shadow-2xs"
                 title="Sign In or Register"
               >
                 <User className="w-3.5 h-3.5 text-stone-500" />
                 <span className="hidden sm:inline">Sign In</span>
-              </button>
+              </Link>
             )}
 
             {/* Book Visit: High-conversion glowing pill button */}
@@ -131,16 +134,6 @@ export default function Header({ cartCount, onCartOpen, onOpenCustomerAuth }: He
             >
               <Package className="w-3.5 h-3.5 text-stone-500" />
               <span>Track</span>
-            </Link>
-
-            {/* Admin Portal Button */}
-            <Link
-              to="/admin"
-              className="hidden xl:inline-flex items-center gap-1.5 text-xs font-semibold text-amber-900 bg-amber-50 hover:bg-amber-100/80 px-3 py-2 rounded-full border border-amber-200/80 transition-all duration-200 whitespace-nowrap active:scale-95 shadow-2xs"
-              title="Artisan Admin Portal"
-            >
-              <ShieldCheck className="w-3.5 h-3.5 text-amber-700" />
-              <span>Admin</span>
             </Link>
 
             {/* Subtle Divider */}
@@ -207,16 +200,13 @@ export default function Header({ cartCount, onCartOpen, onOpenCustomerAuth }: He
                 </Link>
               )
             ) : (
-              <button
-                type="button"
-                onClick={() => {
-                  setMobileOpen(false);
-                  onOpenCustomerAuth?.();
-                }}
+              <Link
+                to="/login"
+                onClick={() => setMobileOpen(false)}
                 className="flex items-center gap-2 text-sm font-semibold text-brand-600 bg-brand-50 px-3 py-2.5 rounded-xl border border-brand-200 mb-1 text-left w-full"
               >
                 <User className="w-4 h-4 text-brand-600" /> Sign In / Create Account
-              </button>
+              </Link>
             )}
 
             {NAV_LINKS.map((link) => {
@@ -250,17 +240,6 @@ export default function Header({ cartCount, onCartOpen, onOpenCustomerAuth }: He
               className="flex items-center gap-2 text-sm font-medium text-stone-600 px-3 py-2.5 rounded-lg hover:bg-stone-50"
             >
               <Package className="w-4 h-4" /> Track Your Order
-            </Link>
-            <Link
-              to="/admin"
-              onClick={() => setMobileOpen(false)}
-              className="flex items-center justify-between text-sm font-semibold text-amber-900 bg-amber-100/90 px-3 py-2.5 rounded-lg hover:bg-amber-200 border border-amber-300"
-            >
-              <div className="flex items-center gap-2">
-                <ShieldCheck className="w-4 h-4 text-amber-700" />
-                <span>Artisan Admin Portal</span>
-              </div>
-              <span className="text-[10px] bg-amber-200 text-amber-900 px-2 py-0.5 rounded-full font-medium">Dashboard</span>
             </Link>
             <a
               href="tel:+918826054537"

@@ -258,6 +258,7 @@ export interface CustomerAccount {
   city?: string;
   address?: string;
   pincode?: string;
+  avatar?: string;
   createdAt: string;
 }
 

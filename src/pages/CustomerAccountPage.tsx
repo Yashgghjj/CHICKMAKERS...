@@ -23,6 +23,7 @@ import { useCustomerAuth } from '../context/CustomerAuthContext';
 import { api } from '../services/api';
 import type { Order } from '../types';
 import PageTransition from '../components/PageTransition';
+import GoogleSignInModal, { GoogleIcon } from '../components/GoogleSignInModal';
 
 export default function CustomerAccountPage() {
   const { customerUser, logout, updateProfile } = useCustomerAuth();
@@ -32,6 +33,7 @@ export default function CustomerAccountPage() {
   const [loadingOrders, setLoadingOrders] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [editMsg, setEditMsg] = useState<string | null>(null);
+  const [showGoogleModal, setShowGoogleModal] = useState(false);
 
   // Edit form state
   const [name, setName] = useState('');
@@ -237,6 +239,45 @@ export default function CustomerAccountPage() {
                 </div>
               )}
 
+              {/* Google / Gmail Account Status & 1-Click Access */}
+              <div className="p-4 rounded-2xl bg-stone-50 border border-stone-200 text-xs shadow-xs space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 font-bold text-stone-900">
+                    <GoogleIcon className="w-4 h-4" />
+                    <span>Google Account</span>
+                  </div>
+                  {customerUser.email && customerUser.email.includes('@') ? (
+                    <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-semibold flex items-center gap-1">
+                      <CheckCircle2 className="w-3 h-3 text-emerald-600" /> Active
+                    </span>
+                  ) : (
+                    <span className="px-2 py-0.5 rounded-full bg-stone-200 text-stone-600 text-[10px] font-medium">
+                      Not Linked
+                    </span>
+                  )}
+                </div>
+
+                {customerUser.email && customerUser.email.includes('@') ? (
+                  <p className="text-[11px] text-stone-600 leading-relaxed">
+                    Signed in with verified identity <span className="font-semibold text-stone-900">{customerUser.email}</span>. You can sign in anytime with 1-click.
+                  </p>
+                ) : (
+                  <div>
+                    <p className="text-[11px] text-stone-500 mb-2">
+                      Connect your Gmail to enable fast 1-click Google authentication.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => setShowGoogleModal(true)}
+                      className="w-full py-1.5 px-3 rounded-xl border border-stone-300 hover:border-stone-400 bg-white hover:bg-stone-100 text-stone-800 text-xs font-semibold flex items-center justify-center gap-2 transition cursor-pointer"
+                    >
+                      <GoogleIcon className="w-4 h-4" />
+                      <span>Link Google Account</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+
               {/* Artisan Direct Assistance */}
               <div className="p-4 rounded-2xl bg-amber-50/80 border border-amber-200/80 text-xs">
                 <div className="flex items-center gap-2 text-amber-900 font-bold mb-1">
@@ -359,6 +400,11 @@ export default function CustomerAccountPage() {
 
         </div>
       </div>
+
+      <GoogleSignInModal
+        open={showGoogleModal}
+        onClose={() => setShowGoogleModal(false)}
+      />
     </PageTransition>
   );
 }

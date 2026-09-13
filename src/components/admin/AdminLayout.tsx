@@ -103,7 +103,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         {/* Sidebar Header */}
         <div className="p-5 border-b border-sage-800 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <AnimatedLogo size="sm" variant="dark" showSubtitle={false} showIcon={true} />
+            <AnimatedLogo size="sm" variant="dark" showSubtitle={false} showTitle={false} showIcon={true} />
             <div>
               <div className="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center gap-1">
                 <ShieldCheck className="w-3.5 h-3.5" /> Admin Portal

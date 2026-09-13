@@ -61,68 +61,79 @@ interface HomePageProps {
 export default function HomePage({ onBookMeasurement }: HomePageProps) {
   return (
     <PageTransition>
-      {/* Hero Section with Seasoned Assam Bamboo Stalks Background */}
-      <section className="relative overflow-hidden bg-stone-950 text-white py-10 sm:py-14 md:py-20 flex items-center">
+      {/* Hero Section with Handcrafted Bamboo Chick Blind Window Background */}
+      <section className="relative overflow-hidden bg-stone-950 text-white py-12 sm:py-16 md:py-24 flex items-center group">
         
-        {/* User Uploaded Bamboo Stalks Background Photo */}
+        {/* Hero Background Photo - prominently visible behind Bamboo Chick Maker & Shiva Fabrication */}
         <div className="absolute inset-0 z-0">
           <img
-            src="/img/bamboo-stalks-bg.png"
-            alt="Authentic Seasoned Assam Bamboo Stalks"
-            className="w-full h-full object-cover object-center brightness-[0.8] contrast-[1.1]"
+            src="/img/our-services/bamboo-chick-blinds.jpg"
+            alt="Handcrafted Bamboo Chick Blind - Bamboo Chick Maker & Shiva Fabrication"
+            className="w-full h-full object-cover object-center brightness-[0.85] contrast-[1.05] transition-all duration-700"
+            referrerPolicy="no-referrer"
+            onError={(e) => {
+              const target = e.currentTarget;
+              if (!target.src.includes('bamboo-stalks-bg.png')) {
+                target.src = '/img/bamboo-stalks-bg.png';
+              }
+            }}
           />
-          {/* Ambient Dark Vignette Overlay for High Text Legibility */}
-          <div className="absolute inset-0 bg-gradient-to-r from-stone-950/95 via-stone-950/80 to-stone-950/40" />
-          <div className="absolute inset-0 bg-gradient-to-t from-stone-950/90 via-transparent to-stone-950/50" />
+          {/* Subtle Scrim & Vignette: Keeps the bamboo blind clearly visible while text stays sharp */}
+          <div className="absolute inset-0 bg-stone-950/45" />
+          <div className="absolute inset-0 bg-gradient-to-r from-stone-950/85 via-stone-950/55 to-stone-950/20" />
+          <div className="absolute inset-0 bg-gradient-to-t from-stone-950/85 via-transparent to-stone-950/30" />
         </div>
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 w-full">
           
-          {/* Artisan Badge */}
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-500/25 text-brand-300 text-[11px] sm:text-xs font-semibold tracking-wider uppercase mb-2 sm:mb-3 border border-brand-400/40 backdrop-blur-md">
-            <span className="w-2 h-2 rounded-full bg-brand-400 animate-pulse" />
-            <span>Direct Artisan · Greater Noida &amp; NCR</span>
-          </div>
+          {/* Semi-translucent glass card for crystal clear text legibility while seeing the bamboo blind in background */}
+          <div className="max-w-2xl bg-stone-950/40 backdrop-blur-[2px] p-5 sm:p-7 rounded-2xl sm:rounded-3xl border border-white/10 shadow-2xl">
+            {/* Artisan Badge */}
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-500/30 text-brand-300 text-[11px] sm:text-xs font-semibold tracking-wider uppercase mb-3 border border-brand-400/50 backdrop-blur-md">
+              <span className="w-2 h-2 rounded-full bg-brand-400 animate-pulse" />
+              <span>Direct Artisan · Greater Noida &amp; NCR</span>
+            </div>
 
-          {/* Headline */}
-          <h1 className="font-hero text-2xl sm:text-4xl lg:text-5xl font-bold text-white tracking-tight mb-2 sm:mb-3 leading-tight max-w-2xl drop-shadow-md">
-            Bamboo Chick Maker &amp; Shiva Fabrication
-          </h1>
+            {/* Headline */}
+            <h1 className="font-hero text-2xl sm:text-4xl lg:text-5xl font-bold text-white tracking-tight mb-2 sm:mb-3 leading-tight drop-shadow-md">
+              Bamboo Chick Maker &amp; Shiva Fabrication
+            </h1>
 
-          {/* Clean, Concise Subtitle */}
-          <p className="font-hero text-stone-200 text-xs sm:text-sm md:text-base max-w-lg leading-relaxed mb-5 font-normal drop-shadow">
-            Handcrafted bamboo chicks, blinds, huts &amp; fabrication by craftsman Shiva.
-          </p>
+            {/* Clean, Concise Subtitle */}
+            <p className="font-hero text-stone-200 text-xs sm:text-sm md:text-base leading-relaxed mb-5 font-normal drop-shadow">
+              Handcrafted bamboo chicks, blinds, huts &amp; fabrication by craftsman Shiva.
+            </p>
 
-          {/* Action Buttons */}
-          <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
-            <Link
-              to="/calculator"
-              className="inline-flex items-center justify-center gap-2 bg-[#E85D26] hover:bg-[#D94E18] text-white px-5 sm:px-6 py-2.5 sm:py-3 rounded-full font-bold transition-all hover:scale-105 shadow-lg text-xs sm:text-sm border border-brand-400/30"
-            >
-              Calculate Price <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
-            
-            <button
-              onClick={onBookMeasurement}
-              className="inline-flex items-center justify-center gap-1.5 sm:gap-2 bg-white/15 hover:bg-white/25 backdrop-blur-md text-white px-5 sm:px-6 py-2.5 sm:py-3 rounded-full font-bold transition-all hover:scale-105 border border-white/25 text-xs sm:text-sm"
-            >
-              <Ruler className="w-3.5 h-3.5 text-brand-300" /> Book Free Visit
-            </button>
+            {/* Action Buttons */}
+            <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
+              <Link
+                to="/calculator"
+                className="inline-flex items-center justify-center gap-2 bg-[#E85D26] hover:bg-[#D94E18] text-white px-5 sm:px-6 py-2.5 sm:py-3 rounded-full font-bold transition-all hover:scale-105 shadow-lg text-xs sm:text-sm border border-brand-400/30"
+              >
+                Calculate Price <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+              
+              <button
+                onClick={onBookMeasurement}
+                className="inline-flex items-center justify-center gap-1.5 sm:gap-2 bg-white/15 hover:bg-white/25 backdrop-blur-md text-white px-5 sm:px-6 py-2.5 sm:py-3 rounded-full font-bold transition-all hover:scale-105 border border-white/25 text-xs sm:text-sm"
+              >
+                <Ruler className="w-3.5 h-3.5 text-brand-300" /> Book Free Visit
+              </button>
 
-            <a
-              href="tel:+918826054537"
-              className="inline-flex items-center justify-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white px-4 sm:px-5 py-2.5 sm:py-3 rounded-full font-bold transition-all text-xs sm:text-sm shadow-md"
-            >
-              <Phone className="w-3.5 h-3.5" /> Call: 8826054537
-            </a>
-          </div>
+              <a
+                href="tel:+918826054537"
+                className="inline-flex items-center justify-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white px-4 sm:px-5 py-2.5 sm:py-3 rounded-full font-bold transition-all text-xs sm:text-sm shadow-md"
+              >
+                <Phone className="w-3.5 h-3.5" /> Call: 8826054537
+              </a>
+            </div>
 
-          {/* Crisp Highlights */}
-          <div className="mt-4 pt-3 border-t border-white/15 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[11px] sm:text-xs font-medium text-stone-300">
-            <span>✓ From ₹58/sq.ft</span>
-            <span>✓ Direct Artisan</span>
-            <span>✓ 5-Yr Guarantee</span>
+            {/* Crisp Highlights */}
+            <div className="mt-4 pt-3 border-t border-white/15 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[11px] sm:text-xs font-medium text-stone-300">
+              <span>✓ From ₹58/sq.ft</span>
+              <span>✓ Direct Artisan</span>
+              <span>✓ 5-Yr Guarantee</span>
+            </div>
           </div>
 
         </div>

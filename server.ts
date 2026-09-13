@@ -25,7 +25,7 @@ import {
 } from './src/data/sampleOrders.ts';
 import { COUPONS, GST_RATE } from './src/types.ts';
 
-const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
+const PORT = 3000;
 const isProd = process.env.NODE_ENV === 'production';
 
 let products: Product[] = [...PRODUCTS];
@@ -649,6 +649,72 @@ async function startServer() {
   app.post('/api/auth/signup', handleCustomerSignup);
   app.post('/api/customer/signup', handleCustomerSignup);
 
+  // Google / Gmail OAuth Login & Auto-Provisioning Endpoint
+  app.post('/api/auth/google', (req, res) => {
+    const { email, name, avatar } = req.body;
+    if (!email || typeof email !== 'string') {
+      return res.status(400).json({
+        success: false,
+        message: 'A valid Gmail or Google account email is required.',
+      });
+    }
+
+    const cleanEmail = email.trim().toLowerCase();
+    
+    // Look up user in unified usersDatabase
+    let user = usersDatabase.find(
+      (u) => u.email && u.email.toLowerCase() === cleanEmail
+    );
+
+    if (!user) {
+      // Auto-provision new customer account with verified Google identity
+      const id = `cust-g-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+      const displayName = (name && typeof name === 'string' && name.trim()) 
+        ? name.trim() 
+        : cleanEmail.split('@')[0];
+      
+      const newCustomer: UserRecord = {
+        id,
+        name: displayName,
+        email: cleanEmail,
+        phone: '',
+        role: 'customer',
+        city: 'Noida',
+        address: '',
+        pincode: '',
+        createdAt: new Date().toISOString(),
+        passwordHash: 'google_oauth_verified',
+        avatar: avatar || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(displayName)}`,
+      };
+      usersDatabase.push(newCustomer);
+      user = newCustomer;
+    } else if (avatar && !user.avatar) {
+      user.avatar = avatar;
+    }
+
+    const role = user.role; // 'admin' if admin email, else 'customer'
+    const token = `auth_${role}_g_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+
+    authSessions.set(token, {
+      token,
+      userId: user.id,
+      role: user.role,
+      email: user.email,
+      name: user.name,
+      createdAt: new Date().toISOString(),
+    });
+
+    const { passwordHash: _ph, ...safeUser } = user;
+    return res.json({
+      success: true,
+      token,
+      role: user.role,
+      user: safeUser,
+      redirectTo: user.role === 'admin' ? '/admin' : '/account',
+      message: `Signed in successfully with Google (${cleanEmail})!`,
+    });
+  });
+
   // Unified Current User Check (Verified from database)
   app.get('/api/auth/me', (req, res) => {
     const auth = getAuthenticatedUser(req);
@@ -1085,8 +1151,8 @@ async function startServer() {
     res.json({ success: true, order });
   });
 
-  app.patch('/api/orders/:id/status', (req, res) => {
-    const order = findOrder(req.params.id);
+  app.patch('/api/orders/:id/status', requireAdmin, (req, res) => {
+    const order = findOrder(req.params.id as string);
     if (!order) return res.status(404).json({ success: false, message: 'Order not found' });
     const status = req.body.status as OrderStatus;
     order.currentStatus = status;

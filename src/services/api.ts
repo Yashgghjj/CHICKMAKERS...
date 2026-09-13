@@ -233,6 +233,12 @@ export const api = {
       method: 'POST',
     }),
 
+  authGoogle: (payload: { email: string; name?: string; avatar?: string; googleId?: string }) =>
+    request<SmartAuthResult>('/api/auth/google', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
+
   // Unified Smart Login alias (Auto-configures Admin vs Customer)
   smartLogin: (payload: { identifier?: string; email?: string; phone?: string; password: string }) =>
     request<SmartAuthResult>('/api/auth/login', {

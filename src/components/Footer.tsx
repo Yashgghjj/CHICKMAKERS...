@@ -70,11 +70,11 @@ export default function Footer() {
             © 2026 Bamboo Chick Maker &amp; Shiva Fabrication. Handcrafted Bamboo Architecture &amp; Metal Structures. All Rights Reserved.
           </div>
           <Link
-            to="/admin"
+            to="/login"
             className="inline-flex items-center gap-1.5 text-stone-400 hover:text-amber-400 font-medium transition"
           >
             <Lock className="w-3.5 h-3.5" />
-            <span>Artisan Admin Portal</span>
+            <span>Sign In</span>
           </Link>
         </div>
       </div>

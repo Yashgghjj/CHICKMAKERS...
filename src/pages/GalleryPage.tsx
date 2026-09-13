@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
 import { 
   Search, 
@@ -25,6 +26,22 @@ export default function GalleryPage() {
   const [activeModalItem, setActiveModalItem] = useState<GalleryItem | null>(null);
   const [viewMode, setViewMode] = useState<'grid' | 'detailed'>('grid');
   const [imageErrorMap, setImageErrorMap] = useState<Record<string, boolean>>({});
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (activeModalItem) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [activeModalItem]);
 
   // Filter items based on category and search query
   const filteredItems = useMemo(() => {
@@ -219,11 +236,12 @@ export default function GalleryPage() {
                     </h3>
 
                     <button
+                      type="button"
                       onClick={(e) => {
                         e.stopPropagation();
                         setActiveModalItem(item);
                       }}
-                      className="w-full bg-[#E85D26] hover:bg-[#D94E18] active:scale-98 text-white font-bold py-2.5 px-4 rounded-lg uppercase tracking-wider text-xs text-center transition-all duration-200 shadow-sm"
+                      className="w-full bg-[#E85D26] hover:bg-[#D94E18] active:scale-98 text-white font-bold py-2.5 px-4 rounded-lg uppercase tracking-wider text-xs text-center transition-all duration-200 shadow-sm cursor-pointer"
                     >
                       READ MORE
                     </button>
@@ -366,16 +384,19 @@ export default function GalleryPage() {
         </div>
       </section>
 
-      {/* Interactive Lightbox / Detail Modal */}
-      {activeModalItem && (
+      {/* Interactive Lightbox / Detail Modal rendered into document.body */}
+      {mounted && activeModalItem && createPortal(
         <div 
-          className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 md:p-6 overflow-y-auto animate-fade-in"
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-[99999] bg-black/90 backdrop-blur-md flex items-center justify-center p-4 md:p-6 overflow-y-auto animate-fade-in"
           onClick={(e) => { if (e.target === e.currentTarget) setActiveModalItem(null); }}
         >
           {/* Close Button */}
           <button
+            type="button"
             onClick={() => setActiveModalItem(null)}
-            className="absolute top-4 right-4 z-50 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center backdrop-blur transition-colors"
+            className="absolute top-4 right-4 z-50 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center backdrop-blur transition-colors cursor-pointer"
             title="Close (Esc)"
           >
             <X className="w-5 h-5" />
@@ -383,15 +404,17 @@ export default function GalleryPage() {
 
           {/* Prev / Next Navigation Arrows */}
           <button
+            type="button"
             onClick={() => navigateModal(-1)}
-            className="absolute left-4 top-1/2 -translate-y-1/2 z-50 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center backdrop-blur transition-all hover:scale-110 hidden sm:flex"
+            className="absolute left-4 top-1/2 -translate-y-1/2 z-50 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center backdrop-blur transition-all hover:scale-110 hidden sm:flex cursor-pointer"
             title="Previous (Left Arrow)"
           >
             <ChevronLeft className="w-6 h-6" />
           </button>
           <button
+            type="button"
             onClick={() => navigateModal(1)}
-            className="absolute right-4 top-1/2 -translate-y-1/2 z-50 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center backdrop-blur transition-all hover:scale-110 hidden sm:flex"
+            className="absolute right-4 top-1/2 -translate-y-1/2 z-50 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center backdrop-blur transition-all hover:scale-110 hidden sm:flex cursor-pointer"
             title="Next (Right Arrow)"
           >
             <ChevronRight className="w-6 h-6" />
@@ -505,7 +528,8 @@ export default function GalleryPage() {
             </div>
 
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
     </PageTransition>

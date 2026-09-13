@@ -2,6 +2,7 @@ import { useState, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { X, Mail, Phone, Lock, User, Eye, EyeOff, CheckCircle2, AlertCircle, Sparkles } from 'lucide-react';
 import { useCustomerAuth } from '../context/CustomerAuthContext';
+import GoogleSignInModal, { GoogleIcon } from './GoogleSignInModal';
 
 interface CustomerAuthModalProps {
   open: boolean;
@@ -21,6 +22,7 @@ export default function CustomerAuthModal({
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [showGoogleModal, setShowGoogleModal] = useState(false);
 
   // Login fields
   const [loginIdentifier, setLoginIdentifier] = useState('');
@@ -228,6 +230,23 @@ export default function CustomerAuthModal({
                 {loading ? 'Signing in...' : 'Sign In to Account'}
               </button>
 
+              {/* Google / Gmail Quick Authentication Option - Placed After Sign In Button */}
+              <div className="relative my-3.5 flex items-center justify-center">
+                <div className="border-t border-stone-200 w-full" />
+                <span className="bg-white px-3 text-[11px] font-medium text-stone-400 uppercase tracking-wider whitespace-nowrap absolute">
+                  or sign in with
+                </span>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setShowGoogleModal(true)}
+                className="w-full flex items-center justify-center gap-2.5 py-2.5 px-4 bg-white hover:bg-stone-50 active:scale-[0.99] text-stone-800 font-bold text-xs sm:text-sm rounded-xl border border-stone-300 shadow-xs hover:border-stone-400 transition-all duration-200 cursor-pointer"
+              >
+                <GoogleIcon className="w-4.5 h-4.5" />
+                <span>Continue with Google / Gmail</span>
+              </button>
+
               <div className="p-3 bg-stone-50 rounded-xl border border-stone-200 text-stone-600 text-[11px] space-y-1.5">
                 <div className="font-semibold text-stone-700 text-center">Quick Demo Accounts:</div>
                 <div className="flex gap-2 justify-center">
@@ -368,6 +387,23 @@ export default function CustomerAuthModal({
               >
                 {loading ? 'Creating account...' : 'Create Customer Account'}
               </button>
+
+              {/* Google / Gmail Quick Authentication Option - Placed After Submit */}
+              <div className="relative my-3.5 flex items-center justify-center">
+                <div className="border-t border-stone-200 w-full" />
+                <span className="bg-white px-3 text-[11px] font-medium text-stone-400 uppercase tracking-wider whitespace-nowrap absolute">
+                  or sign up with
+                </span>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setShowGoogleModal(true)}
+                className="w-full flex items-center justify-center gap-2.5 py-2.5 px-4 bg-white hover:bg-stone-50 active:scale-[0.99] text-stone-800 font-bold text-xs sm:text-sm rounded-xl border border-stone-300 shadow-xs hover:border-stone-400 transition-all duration-200 cursor-pointer"
+              >
+                <GoogleIcon className="w-4.5 h-4.5" />
+                <span>Sign up with Google / Gmail</span>
+              </button>
             </form>
           )}
 
@@ -381,6 +417,16 @@ export default function CustomerAuthModal({
           </div>
         </div>
       </div>
+
+      <GoogleSignInModal
+        open={showGoogleModal}
+        onClose={() => setShowGoogleModal(false)}
+        onSuccess={() => {
+          onClose();
+          onSuccess?.();
+          navigate('/account');
+        }}
+      />
     </div>
   );
 }
