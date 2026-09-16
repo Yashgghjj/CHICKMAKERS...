@@ -12,17 +12,25 @@ import {
   Layers,
   Sparkles,
   RefreshCw,
+  RotateCcw,
 } from 'lucide-react';
 import { api } from '../../services/api';
 import type { Product, ProductCategory } from '../../types';
+import {
+  PRODUCTS,
+  loadProductsFromStorage,
+  saveProductsToStorage,
+} from '../../data/products';
 
-const CATEGORIES: { id: ProductCategory | 'all'; name: string }[] = [
+const CATEGORIES: { id: string; name: string }[] = [
   { id: 'all', name: 'All Products' },
   { id: 'bamboo-chick', name: 'Bamboo Chicks & Blinds' },
   { id: 'bamboo-huts', name: 'Bamboo Huts & Gazebos' },
-  { id: 'safety-nets', name: 'Safety & Bird Nets' },
-  { id: 'welding-structure', name: 'Welding & Structures' },
+  { id: 'bamboo-fencing', name: 'Bamboo Jafri & Fencing' },
+  { id: 'safety-net', name: 'Safety & Bird Nets' },
+  { id: 'fabrication-roof', name: 'Welding Roof Structures' },
   { id: 'artificial-grass', name: 'Artificial Grass' },
+  { id: 'channel-blinds', name: 'Channel & Zebra Blinds' },
 ];
 
 const PRESET_IMAGES = [
@@ -30,13 +38,19 @@ const PRESET_IMAGES = [
   { label: 'Bamboo Chick Blinds', url: '/img/our-services/bamboo-chick-blinds.jpg' },
   { label: 'Bamboo Hut', url: '/img/our-services/bamboo-hut.jpg' },
   { label: 'Bamboo Fencing', url: '/img/our-services/bamboo-fencing.jpg' },
+  { label: 'Bamboo Railing', url: '/img/our-services/bamboo-railing.jpg' },
   { label: 'Pigeon Net', url: '/img/our-services/pigeon-net.jpg' },
   { label: 'Agro Shade Net', url: '/img/our-services/agro-shade-nets.jpg' },
+  { label: 'Zebra Blinds', url: '/img/our-services/zebra-blinds.jpg' },
+  { label: 'Gallery - Cottage', url: '/img/gallery/5.jpg' },
+  { label: 'Gallery - Jafri', url: '/img/gallery/2.jpg' },
+  { label: 'Gallery - Shed Structure', url: '/img/gallery/7.jpg' },
+  { label: 'Gallery - Turf Grass', url: '/img/gallery/8.jpg' },
 ];
 
 export default function AdminProductsPage() {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [products, setProducts] = useState<Product[]>(() => loadProductsFromStorage());
+  const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
@@ -70,9 +84,16 @@ export default function AdminProductsPage() {
     try {
       setLoading(true);
       const res = await api.getProducts();
-      setProducts(res as Product[]);
+      if (Array.isArray(res) && res.length > 0) {
+        setProducts(res as Product[]);
+      } else {
+        const fallback = loadProductsFromStorage();
+        setProducts(fallback);
+      }
     } catch (err) {
-      console.error('Failed to load products', err);
+      console.warn('API getProducts failed, using local product catalog:', err);
+      const fallback = loadProductsFromStorage();
+      setProducts(fallback);
     } finally {
       setLoading(false);
     }
@@ -82,14 +103,40 @@ export default function AdminProductsPage() {
     fetchProducts();
   }, []);
 
+  function handleRestoreDefaults() {
+    if (
+      window.confirm(
+        'Restore the entire product catalog to the standard 12 authentic handmade Assam bamboo & fabrication products?'
+      )
+    ) {
+      saveProductsToStorage(PRODUCTS);
+      setProducts([...PRODUCTS]);
+      setSelectedCategory('all');
+      setSearchQuery('');
+      triggerToast('Restored catalog to 12 authentic handmade products!');
+    }
+  }
+
   const filteredProducts = useMemo(() => {
     return products.filter((p) => {
-      const matchCat = selectedCategory === 'all' || p.category === selectedCategory;
+      const matchCat =
+        selectedCategory === 'all' ||
+        p.category === selectedCategory ||
+        (selectedCategory === 'safety-net' && (p.category === 'safety-net' || p.category === 'safety-nets')) ||
+        (selectedCategory === 'safety-nets' && (p.category === 'safety-net' || p.category === 'safety-nets')) ||
+        (selectedCategory === 'fabrication-roof' &&
+          (p.category === 'fabrication-roof' || p.category === 'welding-structure')) ||
+        (selectedCategory === 'welding-structure' &&
+          (p.category === 'fabrication-roof' || p.category === 'welding-structure'));
+
+      const q = searchQuery.toLowerCase().trim();
       const matchSearch =
-        !searchQuery ||
-        p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        p.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        p.materials.some((m) => m.toLowerCase().includes(searchQuery.toLowerCase()));
+        !q ||
+        p.name.toLowerCase().includes(q) ||
+        (p.description && p.description.toLowerCase().includes(q)) ||
+        (p.materials && p.materials.some((m) => m.toLowerCase().includes(q))) ||
+        (p.features && p.features.some((f) => f.toLowerCase().includes(q)));
+
       return matchCat && matchSearch;
     });
   }, [products, selectedCategory, searchQuery]);
@@ -156,14 +203,22 @@ export default function AdminProductsPage() {
       if (editingProduct) {
         const res = await api.updateProduct(editingProduct.id, payload);
         if (res.success) {
-          setProducts((prev) => prev.map((p) => (p.id === editingProduct.id ? res.product : p)));
+          setProducts((prev) => {
+            const next = prev.map((p) => (p.id === editingProduct.id ? res.product : p));
+            saveProductsToStorage(next);
+            return next;
+          });
           triggerToast('Product updated successfully!');
           setEditingProduct(null);
         }
       } else {
         const res = await api.createProduct(payload);
         if (res.success) {
-          setProducts((prev) => [res.product, ...prev]);
+          setProducts((prev) => {
+            const next = [res.product, ...prev];
+            saveProductsToStorage(next);
+            return next;
+          });
           triggerToast('New product added to catalog!');
           setShowAddModal(false);
         }
@@ -180,7 +235,11 @@ export default function AdminProductsPage() {
     try {
       const res = await api.deleteProduct(deletingProduct.id);
       if (res.success) {
-        setProducts((prev) => prev.filter((p) => p.id !== deletingProduct.id));
+        setProducts((prev) => {
+          const next = prev.filter((p) => p.id !== deletingProduct.id);
+          saveProductsToStorage(next);
+          return next;
+        });
         triggerToast('Product deleted from catalog');
         setDeletingProduct(null);
       }
@@ -204,11 +263,19 @@ export default function AdminProductsPage() {
         <div>
           <h2 className="text-xl font-bold text-stone-900 font-serif">Product Catalog</h2>
           <p className="text-xs text-stone-500">
-            Create, update and manage bamboo products, custom pricing &amp; specifications
+            Create, update and manage bamboo products, custom pricing &amp; specifications ({products.length} total)
           </p>
         </div>
 
         <div className="flex items-center gap-2.5">
+          <button
+            onClick={handleRestoreDefaults}
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-stone-200 bg-white hover:bg-stone-50 text-stone-600 text-xs font-medium transition shadow-xs"
+            title="Reset catalog to standard 12 products"
+          >
+            <RotateCcw className="w-3.5 h-3.5 text-stone-500" />
+            <span className="hidden sm:inline">Reset Defaults</span>
+          </button>
           <button
             onClick={fetchProducts}
             className="p-2.5 rounded-xl border border-stone-200 bg-white hover:bg-stone-50 text-stone-600 transition shadow-xs"
@@ -251,19 +318,29 @@ export default function AdminProductsPage() {
 
         {/* Category Pills */}
         <div className="flex flex-wrap items-center gap-1.5 pt-1">
-          {CATEGORIES.map((cat) => (
-            <button
-              key={cat.id}
-              onClick={() => setSelectedCategory(cat.id)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-all ${
-                selectedCategory === cat.id
-                  ? 'bg-stone-900 text-amber-300 font-semibold shadow-xs'
-                  : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
-              }`}
-            >
-              {cat.name}
-            </button>
-          ))}
+          {CATEGORIES.map((cat) => {
+            const count = products.filter((p) => {
+              if (cat.id === 'all') return true;
+              if (p.category === cat.id) return true;
+              if (cat.id === 'safety-net' && (p.category === 'safety-net' || p.category === 'safety-nets')) return true;
+              if (cat.id === 'fabrication-roof' && (p.category === 'fabrication-roof' || p.category === 'welding-structure')) return true;
+              return false;
+            }).length;
+
+            return (
+              <button
+                key={cat.id}
+                onClick={() => setSelectedCategory(cat.id)}
+                className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-all ${
+                  selectedCategory === cat.id
+                    ? 'bg-stone-900 text-amber-300 font-semibold shadow-xs'
+                    : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
+                }`}
+              >
+                {cat.name} {count > 0 && <span className="opacity-70 text-[11px]">({count})</span>}
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -282,11 +359,40 @@ export default function AdminProductsPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-stone-100 text-stone-700">
-              {filteredProducts.length === 0 ? (
+              {products.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="py-12 text-center text-stone-500">
+                    <Package className="w-10 h-10 mx-auto text-amber-500 mb-2" />
+                    <p className="font-bold text-stone-800 text-sm">Product Catalog is Currently Empty</p>
+                    <p className="text-xs text-stone-500 max-w-sm mx-auto mt-1 mb-4">
+                      Click below to load the complete set of 12 authentic Assam bamboo blinds, huts, nets, and fabrication products.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={handleRestoreDefaults}
+                      className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 text-xs font-bold shadow-md inline-flex items-center gap-2"
+                    >
+                      <Sparkles className="w-4 h-4" />
+                      Load 12 Default Products
+                    </button>
+                  </td>
+                </tr>
+              ) : filteredProducts.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="py-12 text-center text-stone-400">
                     <Package className="w-8 h-8 mx-auto text-stone-300 mb-2" />
-                    <p className="font-medium">No products found matching the criteria.</p>
+                    <p className="font-medium text-stone-700">No products found matching the current filters.</p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedCategory('all');
+                        setSearchQuery('');
+                      }}
+                      className="mt-3 px-3 py-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 text-xs font-semibold border border-amber-300/40 inline-flex items-center gap-1.5"
+                    >
+                      <RotateCcw className="w-3.5 h-3.5" />
+                      Reset Filters
+                    </button>
                   </td>
                 </tr>
               ) : (
@@ -428,9 +534,11 @@ export default function AdminProductsPage() {
                   >
                     <option value="bamboo-chick">Bamboo Chick &amp; Blinds</option>
                     <option value="bamboo-huts">Bamboo Huts &amp; Gazebos</option>
-                    <option value="safety-nets">Safety &amp; Bird Nets</option>
-                    <option value="welding-structure">Welding Roof Structure</option>
-                    <option value="artificial-grass">Artificial Grass</option>
+                    <option value="bamboo-fencing">Bamboo Jafri &amp; Fencing</option>
+                    <option value="safety-net">Safety &amp; Bird Nets</option>
+                    <option value="fabrication-roof">Welding Roof Structure (Shiva Fabrication)</option>
+                    <option value="artificial-grass">Artificial Grass Turf</option>
+                    <option value="channel-blinds">Channel &amp; Zebra Blinds</option>
                   </select>
                 </div>
               </div>

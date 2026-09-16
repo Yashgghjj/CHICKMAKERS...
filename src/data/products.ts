@@ -177,5 +177,36 @@ export const CATEGORIES = [
 ];
 
 export function getProductById(id: string): Product | undefined {
-  return PRODUCTS.find((p) => p.id === id);
+  const current = loadProductsFromStorage();
+  return current.find((p) => p.id === id) || PRODUCTS.find((p) => p.id === id);
 }
+
+export const ADMIN_PRODUCTS_STORAGE_KEY = 'chickmakers_admin_products_v2';
+
+export function loadProductsFromStorage(): Product[] {
+  if (typeof window === 'undefined') return [...PRODUCTS];
+  try {
+    const raw = localStorage.getItem(ADMIN_PRODUCTS_STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed;
+      }
+    }
+  } catch (e) {
+    console.warn('Failed to parse stored products, falling back to defaults', e);
+  }
+  // Initialize storage with defaults
+  saveProductsToStorage(PRODUCTS);
+  return [...PRODUCTS];
+}
+
+export function saveProductsToStorage(products: Product[]): void {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem(ADMIN_PRODUCTS_STORAGE_KEY, JSON.stringify(products));
+  } catch (e) {
+    console.warn('Failed to save products to localStorage', e);
+  }
+}
+
