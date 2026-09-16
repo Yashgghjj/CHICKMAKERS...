@@ -18,9 +18,9 @@ export default function BambooWorkerAnimation({
 
   // Compact, well-proportioned dimensions requested by user ("its too large make it smaall")
   const containerSizes = {
-    sm: 'w-32 h-26',
-    md: 'w-36 h-30 sm:w-42 sm:h-34',
-    lg: 'w-44 h-36 sm:w-50 sm:h-40',
+    sm: 'w-24 sm:w-28 aspect-[540/400]',
+    md: 'w-32 sm:w-36 aspect-[540/400]',
+    lg: 'w-40 sm:w-44 aspect-[540/400]',
   }[size];
 
   return (

@@ -7,23 +7,23 @@ export default function Footer() {
   return (
     <footer className="bg-sage-900 text-stone-300 py-10 border-t border-sage-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
-        <div className="grid lg:grid-cols-4 md:grid-cols-2 gap-8 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-8 mb-8">
           
-          {/* Brand & Craft */}
-          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
-            <div className="shrink-0">
-              <BambooWorkerAnimation size="md" />
+          {/* Brand & Craft - Spans 5 columns on desktop and full width on tablet to prevent any overlap */}
+          <div className="md:col-span-2 lg:col-span-5 flex flex-col sm:flex-row items-start gap-4">
+            <div className="shrink-0 bg-sage-950/40 p-2 rounded-2xl border border-sage-800/80 shadow-inner">
+              <BambooWorkerAnimation size="sm" />
             </div>
             <div className="space-y-2 flex-1 min-w-0">
-              <AnimatedLogo size="md" showSubtitle={true} subtitle="By Shiva" variant="dark" showIcon={false} />
-              <p className="text-xs text-stone-300 leading-relaxed">
+              <AnimatedLogo size="md" showSubtitle={true} subtitle="By Shiva · Huts & Chicks" variant="dark" showIcon={false} />
+              <p className="text-xs text-stone-300 leading-relaxed max-w-sm">
                 Handcrafted bamboo chicks, blinds, huts and steel fabrication across Greater Noida &amp; Delhi NCR.
               </p>
             </div>
           </div>
 
           {/* Core Services */}
-          <div>
+          <div className="md:col-span-1 lg:col-span-2">
             <h4 className="font-semibold text-white mb-3 text-sm">Services</h4>
             <ul className="text-sm space-y-2">
               <li><Link to="/services" className="hover:text-brand-400 transition-colors">Bamboo Huts &amp; Gazebos</Link></li>
@@ -34,7 +34,7 @@ export default function Footer() {
           </div>
 
           {/* Quick Links */}
-          <div>
+          <div className="md:col-span-1 lg:col-span-2">
             <h4 className="font-semibold text-white mb-3 text-sm">Quick Links</h4>
             <ul className="text-sm space-y-2">
               <li><Link to="/calculator" className="hover:text-brand-400 transition-colors">Price Calculator</Link></li>
@@ -45,7 +45,7 @@ export default function Footer() {
           </div>
 
           {/* Contact & Workshop */}
-          <div>
+          <div className="md:col-span-2 lg:col-span-3">
             <h4 className="font-semibold text-white mb-3 text-sm">Contact &amp; Workshop</h4>
             <ul className="text-sm space-y-2.5">
               <li className="flex items-center gap-2">

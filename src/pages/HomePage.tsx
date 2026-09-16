@@ -10,13 +10,6 @@ import {
   Sparkles,
   Phone,
   Image as ImageIcon,
-  ChevronLeft,
-  ChevronRight,
-  Sliders,
-  Play,
-  Pause,
-  Eye,
-  EyeOff,
 } from 'lucide-react';
 import PageTransition from '../components/PageTransition';
 import GallerySection from '../components/GallerySection';
@@ -210,18 +203,6 @@ export default function HomePage({ onBookMeasurement }: HomePageProps) {
     }
   };
 
-  const handleNextPhoto = () => {
-    setCustomBgImage(null);
-    setCurrentIndex((prev) => (prev + 1) % CONTINUOUS_BAMBOO_IMAGES.length);
-    setProgressKey((prev) => prev + 1);
-  };
-
-  const handlePrevPhoto = () => {
-    setCustomBgImage(null);
-    setCurrentIndex((prev) => (prev - 1 + CONTINUOUS_BAMBOO_IMAGES.length) % CONTINUOUS_BAMBOO_IMAGES.length);
-    setProgressKey((prev) => prev + 1);
-  };
-
   // Ultra-light gradient scrim at the bottom so the photos stay 100% natural and bright
   const scrimGradientClass =
     overlayStyle === 'subtle'
@@ -235,7 +216,7 @@ export default function HomePage({ onBookMeasurement }: HomePageProps) {
   return (
     <PageTransition>
       {/* Hero Section: Fully open, edge-to-edge cinematic showcase */}
-      <section className="relative overflow-hidden bg-stone-950 text-white min-h-[620px] sm:min-h-[680px] md:min-h-[82vh] flex flex-col justify-between pt-16 pb-8 group">
+      <section className="relative overflow-hidden bg-stone-950 text-white min-h-[620px] sm:min-h-[680px] md:min-h-[82vh] flex flex-col justify-end pt-16 pb-8 group">
         
         {/* Continuous Crossfading Bamboo Photos Stack */}
         <div className="absolute inset-0 z-0 overflow-hidden">
@@ -280,89 +261,6 @@ export default function HomePage({ onBookMeasurement }: HomePageProps) {
 
           {/* Natural Bottom-Weighted Scrim (No box container, pure natural gradient) */}
           <div className={`absolute inset-0 z-2 ${scrimGradientClass} transition-colors duration-500 pointer-events-none`} />
-        </div>
-
-        {/* Top Floating Control Dock: Photo Switcher, Speed & Category Indicator */}
-        <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 w-full flex items-center justify-between pointer-events-none">
-          {/* Subtle Direct Workshop Tag */}
-          <div className="inline-flex items-center gap-1.5 bg-black/40 backdrop-blur-sm px-2.5 py-1 rounded-full border border-white/10 text-[11px] text-stone-300 pointer-events-auto opacity-40 hover:opacity-90 transition-opacity">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-            <span className="font-medium text-white">Direct Workshop</span>
-            <span className="text-stone-400 hidden sm:inline">· Greater Noida</span>
-          </div>
-
-          {/* Ultra-Tiny, Subtle Slideshow Control Pill (Nearly invisible until hovered) */}
-          <div className="pointer-events-auto flex items-center gap-1 bg-black/30 hover:bg-black/80 backdrop-blur-sm px-2 py-0.5 rounded-full border border-white/10 text-[10px] opacity-20 hover:opacity-100 transition-all duration-300 shadow-sm">
-            {/* Play/Pause continuous cycle */}
-            <button
-              type="button"
-              onClick={() => setIsAutoChanging(!isAutoChanging)}
-              className="p-1 rounded-full hover:bg-white/20 text-stone-400 hover:text-white transition cursor-pointer"
-              title={isAutoChanging ? 'Pause continuous change' : 'Resume continuous change'}
-            >
-              {isAutoChanging ? (
-                <Pause className="w-2.5 h-2.5 text-emerald-400" />
-              ) : (
-                <Play className="w-2.5 h-2.5 text-amber-400 fill-amber-400" />
-              )}
-            </button>
-
-            {/* Previous */}
-            <button
-              type="button"
-              onClick={handlePrevPhoto}
-              aria-label="Previous bamboo photo"
-              className="p-0.5 rounded hover:bg-white/20 text-stone-400 hover:text-white transition cursor-pointer"
-              title="Previous photo"
-            >
-              <ChevronLeft className="w-2.5 h-2.5" />
-            </button>
-
-            {/* Tiny Photo Index */}
-            <button
-              type="button"
-              onClick={() => setShowBgModal(true)}
-              className="px-1 text-[10px] text-stone-300 hover:text-amber-300 font-mono cursor-pointer"
-              title={`${currentBambooPhoto.category} - Click for photo options`}
-            >
-              {(currentIndex % CONTINUOUS_BAMBOO_IMAGES.length) + 1}/{CONTINUOUS_BAMBOO_IMAGES.length}
-            </button>
-
-            {/* Next */}
-            <button
-              type="button"
-              onClick={handleNextPhoto}
-              aria-label="Next bamboo photo"
-              className="p-0.5 rounded hover:bg-white/20 text-stone-400 hover:text-white transition cursor-pointer"
-              title="Next photo"
-            >
-              <ChevronRight className="w-2.5 h-2.5" />
-            </button>
-
-            {/* Pure Photo / Toggle Text overlay */}
-            <button
-              type="button"
-              onClick={() => setPurePhotoView(!purePhotoView)}
-              className={`p-0.5 rounded transition cursor-pointer ${
-                purePhotoView 
-                  ? 'text-amber-400' 
-                  : 'text-stone-400 hover:text-white'
-              }`}
-              title={purePhotoView ? 'Show text & buttons' : 'Hide text to view full background photo'}
-            >
-              {purePhotoView ? <Eye className="w-2.5 h-2.5" /> : <EyeOff className="w-2.5 h-2.5" />}
-            </button>
-
-            {/* Options Modal */}
-            <button
-              type="button"
-              onClick={() => setShowBgModal(true)}
-              className="p-0.5 rounded hover:bg-white/20 text-amber-400 hover:text-amber-300 transition cursor-pointer"
-              title="Open bamboo photo settings"
-            >
-              <Sliders className="w-2.5 h-2.5" />
-            </button>
-          </div>
         </div>
 
         {/* Bottom Area: Refined, Compact Typography & Action Buttons (Unobstructed Background) */}
