@@ -276,3 +276,12 @@ body {
   animation: leafDrift2 9s ease-in-out 1.5s infinite;
 }
 
+@keyframes progress {
+  0% {
+    width: 0%;
+  }
+  100% {
+    width: 100%;
+  }
+}
+

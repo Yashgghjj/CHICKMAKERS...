@@ -30,7 +30,7 @@ export default function Header({ cartCount, onCartOpen, onOpenCustomerAuth }: He
       <div className="bg-sage-900 text-white text-xs py-1.5 text-center hidden sm:block">
         <div className="max-w-7xl mx-auto px-4 flex items-center justify-between">
           <span className="inline-flex items-center gap-1 font-medium text-stone-200">
-            Bamboo Chick Maker &amp; Shiva Fabrication · Huts, Blinds, Pigeon Nets &amp; Roofing
+            Bamboo Chick Maker · Huts, Chicks &amp; Blinds
           </span>
           <span className="inline-flex items-center gap-1 font-medium">
             <Phone className="w-3 h-3 text-brand-400" /> Shiva: <a href="tel:+918826054537" className="hover:text-brand-300 underline font-bold text-amber-300">+91 88260 54537</a>

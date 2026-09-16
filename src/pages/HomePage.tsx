@@ -1,8 +1,108 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Ruler, Shield, Truck, Award, Headphones, Sparkles, Phone } from 'lucide-react';
+import {
+  ArrowRight,
+  Ruler,
+  Shield,
+  Truck,
+  Award,
+  Headphones,
+  Sparkles,
+  Phone,
+  Image as ImageIcon,
+  ChevronLeft,
+  ChevronRight,
+  Sliders,
+  Play,
+  Pause,
+  Eye,
+  EyeOff,
+} from 'lucide-react';
 import PageTransition from '../components/PageTransition';
 import GallerySection from '../components/GallerySection';
 import BeforeAfterSlider from '../components/BeforeAfterSlider';
+import HeroBackgroundModal, { BAMBOO_DESIGN_PRESETS } from '../components/HeroBackgroundModal';
+
+export interface BambooHeroImage {
+  id: string;
+  name: string;
+  category: 'Bamboo Hut' | 'Bamboo Blind' | 'Bamboo Curtain' | 'Bamboo Chick';
+  url: string;
+  tag: string;
+}
+
+export const CONTINUOUS_BAMBOO_IMAGES: BambooHeroImage[] = [
+  {
+    id: 'bamboo-slat-window',
+    name: 'Balcony Bamboo Chick Blinds',
+    category: 'Bamboo Blind',
+    url: '/img/our-services/bamboo-chick-blinds.jpg',
+    tag: 'Assam Bamboo Slats · Smooth Roll-Up',
+  },
+  {
+    id: 'bamboo-hut-gazebo',
+    name: 'Authentic Bamboo Hut & Gazebo',
+    category: 'Bamboo Hut',
+    url: '/img/our-services/bamboo-hut.jpg',
+    tag: 'Heavy Treated Poles · Eco-Cottage',
+  },
+  {
+    id: 'chick-curtain-french',
+    name: 'French Door Bamboo Chick Curtain',
+    category: 'Bamboo Curtain',
+    url: '/img/gallery/1.jpg',
+    tag: 'Sun & Heat Reflection · Handwoven',
+  },
+  {
+    id: 'conical-bamboo-hut',
+    name: 'Conical Bamboo Hut Roof Pavilion',
+    category: 'Bamboo Hut',
+    url: '/img/gallery/6.jpg',
+    tag: 'Thatched Roof · Terrace Gazebo',
+  },
+  {
+    id: 'warm-honey-window-blind',
+    name: 'Warm Honey Bamboo Window Blinds',
+    category: 'Bamboo Blind',
+    url: '/img/gallery/2.jpg',
+    tag: 'Filtered Daylight · Natural Polish',
+  },
+  {
+    id: 'garden-bamboo-cottage',
+    name: 'Garden Bamboo Hut Cottage',
+    category: 'Bamboo Hut',
+    url: '/img/gallery/7.jpg',
+    tag: 'Lattice Walls · Farmhouse Pavilion',
+  },
+  {
+    id: 'fine-weave-chick',
+    name: 'Traditional Assam Bamboo Chick',
+    category: 'Bamboo Chick',
+    url: '/img/our-services/bamboo-chick.jpg',
+    tag: 'Braided Cord · Weather-Proof Finish',
+  },
+  {
+    id: 'pergola-bamboo-curtain',
+    name: 'Balcony Pergola Bamboo Curtain',
+    category: 'Bamboo Curtain',
+    url: '/img/gallery/3.jpg',
+    tag: 'High-Rise Sunshade · Water Repellent',
+  },
+  {
+    id: 'sunlit-chick-hd',
+    name: 'Sunlit Window Bamboo Chick Blind',
+    category: 'Bamboo Blind',
+    url: '/img/hero-window-chick-hd.jpg',
+    tag: 'Golden Ambient Light Filtering',
+  },
+  {
+    id: 'high-floor-balcony-screen',
+    name: 'High-Floor Balcony Bamboo Chick',
+    category: 'Bamboo Chick',
+    url: '/img/gallery/9.jpg',
+    tag: 'Wind-Tolerant Anchorage · Heavy Slats',
+  },
+];
 
 const CRAFT_STEPS = [
   {
@@ -59,84 +159,279 @@ interface HomePageProps {
 }
 
 export default function HomePage({ onBookMeasurement }: HomePageProps) {
+  const [currentIndex, setCurrentIndex] = useState<number>(0);
+  const [customBgImage, setCustomBgImage] = useState<string | null>(null);
+  const [isAutoChanging, setIsAutoChanging] = useState<boolean>(true);
+  const [changeInterval, setChangeInterval] = useState<number>(4000); // 4 seconds continuous crossfade
+  const [overlayStyle, setOverlayStyle] = useState<'balanced' | 'dark' | 'subtle'>(() => {
+    const saved = localStorage.getItem('hero_bg_overlay');
+    return saved === 'dark' || saved === 'subtle' ? saved : 'balanced';
+  });
+  const [showBgModal, setShowBgModal] = useState(false);
+
+  const [purePhotoView, setPurePhotoView] = useState<boolean>(false);
+  const [progressKey, setProgressKey] = useState<number>(0);
+
+  // Continuous auto-slideshow effect across all curated bamboo photos
+  useEffect(() => {
+    if (!isAutoChanging || customBgImage) return;
+
+    setProgressKey((prev) => prev + 1);
+    const timer = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % CONTINUOUS_BAMBOO_IMAGES.length);
+    }, changeInterval);
+
+    return () => clearInterval(timer);
+  }, [isAutoChanging, customBgImage, changeInterval]);
+
+  const currentBambooPhoto = CONTINUOUS_BAMBOO_IMAGES[currentIndex % CONTINUOUS_BAMBOO_IMAGES.length];
+
+  const handleSelectBg = (url: string) => {
+    const foundIdx = CONTINUOUS_BAMBOO_IMAGES.findIndex((item) => item.url === url);
+    if (foundIdx !== -1) {
+      setCustomBgImage(null);
+      setCurrentIndex(foundIdx);
+    } else {
+      setCustomBgImage(url);
+    }
+    try {
+      localStorage.setItem('hero_bg_image', url);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const handleChangeOverlay = (style: 'balanced' | 'dark' | 'subtle') => {
+    setOverlayStyle(style);
+    try {
+      localStorage.setItem('hero_bg_overlay', style);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const handleNextPhoto = () => {
+    setCustomBgImage(null);
+    setCurrentIndex((prev) => (prev + 1) % CONTINUOUS_BAMBOO_IMAGES.length);
+    setProgressKey((prev) => prev + 1);
+  };
+
+  const handlePrevPhoto = () => {
+    setCustomBgImage(null);
+    setCurrentIndex((prev) => (prev - 1 + CONTINUOUS_BAMBOO_IMAGES.length) % CONTINUOUS_BAMBOO_IMAGES.length);
+    setProgressKey((prev) => prev + 1);
+  };
+
+  // Ultra-light gradient scrim at the bottom so the photos stay 100% natural and bright
+  const scrimGradientClass =
+    overlayStyle === 'subtle'
+      ? 'bg-gradient-to-t from-stone-950/80 via-stone-950/25 to-transparent'
+      : overlayStyle === 'dark'
+      ? 'bg-gradient-to-t from-stone-950/95 via-stone-950/50 to-stone-950/15'
+      : 'bg-gradient-to-t from-stone-950/90 via-stone-950/35 to-transparent';
+
+  const activeDisplayUrl = customBgImage || currentBambooPhoto.url;
+
   return (
     <PageTransition>
-      {/* Hero Section with Handcrafted Bamboo Chick Blind Window Background */}
-      <section className="relative overflow-hidden bg-stone-950 text-white py-12 sm:py-16 md:py-24 flex items-center group">
+      {/* Hero Section: Fully open, edge-to-edge cinematic showcase */}
+      <section className="relative overflow-hidden bg-stone-950 text-white min-h-[620px] sm:min-h-[680px] md:min-h-[82vh] flex flex-col justify-between pt-16 pb-8 group">
         
-        {/* Hero Background Photo - prominently visible behind Bamboo Chick Maker & Shiva Fabrication */}
-        <div className="absolute inset-0 z-0">
-          <img
-            src="/img/our-services/bamboo-chick-blinds.jpg"
-            alt="Handcrafted Bamboo Chick Blind - Bamboo Chick Maker & Shiva Fabrication"
-            className="w-full h-full object-cover object-center brightness-[0.85] contrast-[1.05] transition-all duration-700"
-            referrerPolicy="no-referrer"
-            onError={(e) => {
-              const target = e.currentTarget;
-              if (!target.src.includes('bamboo-stalks-bg.png')) {
-                target.src = '/img/bamboo-stalks-bg.png';
-              }
-            }}
-          />
-          {/* Subtle Scrim & Vignette: Keeps the bamboo blind clearly visible while text stays sharp */}
-          <div className="absolute inset-0 bg-stone-950/45" />
-          <div className="absolute inset-0 bg-gradient-to-r from-stone-950/85 via-stone-950/55 to-stone-950/20" />
-          <div className="absolute inset-0 bg-gradient-to-t from-stone-950/85 via-transparent to-stone-950/30" />
+        {/* Continuous Crossfading Bamboo Photos Stack */}
+        <div className="absolute inset-0 z-0 overflow-hidden">
+          {CONTINUOUS_BAMBOO_IMAGES.map((imgItem) => {
+            const isActive = !customBgImage && imgItem.id === currentBambooPhoto.id;
+            return (
+              <div
+                key={imgItem.id}
+                className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+                  isActive ? 'opacity-100 z-1' : 'opacity-0 z-0 pointer-events-none'
+                }`}
+              >
+                <img
+                  src={imgItem.url}
+                  alt={`${imgItem.name} - Handcrafted Bamboo Chick Maker & Shiva Fabrication`}
+                  className={`w-full h-full object-cover object-center brightness-105 contrast-[1.08] transition-transform duration-[7000ms] ease-out ${
+                    isActive ? 'scale-105' : 'scale-100'
+                  }`}
+                  referrerPolicy="no-referrer"
+                  onError={(e) => {
+                    const target = e.currentTarget;
+                    if (!target.src.includes('bamboo-stalks-bg.png')) {
+                      target.src = '/img/bamboo-stalks-bg.png';
+                    }
+                  }}
+                />
+              </div>
+            );
+          })}
+
+          {/* Custom user pasted / uploaded image */}
+          {customBgImage && (
+            <div className="absolute inset-0 z-1 opacity-100">
+              <img
+                src={customBgImage}
+                alt="Custom Bamboo Design"
+                className="w-full h-full object-cover object-center brightness-105 contrast-[1.08]"
+                referrerPolicy="no-referrer"
+              />
+            </div>
+          )}
+
+          {/* Natural Bottom-Weighted Scrim (No box container, pure natural gradient) */}
+          <div className={`absolute inset-0 z-2 ${scrimGradientClass} transition-colors duration-500 pointer-events-none`} />
         </div>
 
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 w-full">
-          
-          {/* Semi-translucent glass card for crystal clear text legibility while seeing the bamboo blind in background */}
-          <div className="max-w-2xl bg-stone-950/40 backdrop-blur-[2px] p-5 sm:p-7 rounded-2xl sm:rounded-3xl border border-white/10 shadow-2xl">
-            {/* Artisan Badge */}
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-500/30 text-brand-300 text-[11px] sm:text-xs font-semibold tracking-wider uppercase mb-3 border border-brand-400/50 backdrop-blur-md">
-              <span className="w-2 h-2 rounded-full bg-brand-400 animate-pulse" />
-              <span>Direct Artisan · Greater Noida &amp; NCR</span>
-            </div>
-
-            {/* Headline */}
-            <h1 className="font-hero text-2xl sm:text-4xl lg:text-5xl font-bold text-white tracking-tight mb-2 sm:mb-3 leading-tight drop-shadow-md">
-              Bamboo Chick Maker &amp; Shiva Fabrication
-            </h1>
-
-            {/* Clean, Concise Subtitle */}
-            <p className="font-hero text-stone-200 text-xs sm:text-sm md:text-base leading-relaxed mb-5 font-normal drop-shadow">
-              Handcrafted bamboo chicks, blinds, huts &amp; fabrication by craftsman Shiva.
-            </p>
-
-            {/* Action Buttons */}
-            <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
-              <Link
-                to="/calculator"
-                className="inline-flex items-center justify-center gap-2 bg-[#E85D26] hover:bg-[#D94E18] text-white px-5 sm:px-6 py-2.5 sm:py-3 rounded-full font-bold transition-all hover:scale-105 shadow-lg text-xs sm:text-sm border border-brand-400/30"
-              >
-                Calculate Price <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-              
-              <button
-                onClick={onBookMeasurement}
-                className="inline-flex items-center justify-center gap-1.5 sm:gap-2 bg-white/15 hover:bg-white/25 backdrop-blur-md text-white px-5 sm:px-6 py-2.5 sm:py-3 rounded-full font-bold transition-all hover:scale-105 border border-white/25 text-xs sm:text-sm"
-              >
-                <Ruler className="w-3.5 h-3.5 text-brand-300" /> Book Free Visit
-              </button>
-
-              <a
-                href="tel:+918826054537"
-                className="inline-flex items-center justify-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white px-4 sm:px-5 py-2.5 sm:py-3 rounded-full font-bold transition-all text-xs sm:text-sm shadow-md"
-              >
-                <Phone className="w-3.5 h-3.5" /> Call: 8826054537
-              </a>
-            </div>
-
-            {/* Crisp Highlights */}
-            <div className="mt-4 pt-3 border-t border-white/15 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[11px] sm:text-xs font-medium text-stone-300">
-              <span>✓ From ₹58/sq.ft</span>
-              <span>✓ Direct Artisan</span>
-              <span>✓ 5-Yr Guarantee</span>
-            </div>
+        {/* Top Floating Control Dock: Photo Switcher, Speed & Category Indicator */}
+        <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 w-full flex items-center justify-between pointer-events-none">
+          {/* Subtle Direct Workshop Tag */}
+          <div className="inline-flex items-center gap-1.5 bg-black/40 backdrop-blur-sm px-2.5 py-1 rounded-full border border-white/10 text-[11px] text-stone-300 pointer-events-auto opacity-40 hover:opacity-90 transition-opacity">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+            <span className="font-medium text-white">Direct Workshop</span>
+            <span className="text-stone-400 hidden sm:inline">· Greater Noida</span>
           </div>
 
+          {/* Ultra-Tiny, Subtle Slideshow Control Pill (Nearly invisible until hovered) */}
+          <div className="pointer-events-auto flex items-center gap-1 bg-black/30 hover:bg-black/80 backdrop-blur-sm px-2 py-0.5 rounded-full border border-white/10 text-[10px] opacity-20 hover:opacity-100 transition-all duration-300 shadow-sm">
+            {/* Play/Pause continuous cycle */}
+            <button
+              type="button"
+              onClick={() => setIsAutoChanging(!isAutoChanging)}
+              className="p-1 rounded-full hover:bg-white/20 text-stone-400 hover:text-white transition cursor-pointer"
+              title={isAutoChanging ? 'Pause continuous change' : 'Resume continuous change'}
+            >
+              {isAutoChanging ? (
+                <Pause className="w-2.5 h-2.5 text-emerald-400" />
+              ) : (
+                <Play className="w-2.5 h-2.5 text-amber-400 fill-amber-400" />
+              )}
+            </button>
+
+            {/* Previous */}
+            <button
+              type="button"
+              onClick={handlePrevPhoto}
+              aria-label="Previous bamboo photo"
+              className="p-0.5 rounded hover:bg-white/20 text-stone-400 hover:text-white transition cursor-pointer"
+              title="Previous photo"
+            >
+              <ChevronLeft className="w-2.5 h-2.5" />
+            </button>
+
+            {/* Tiny Photo Index */}
+            <button
+              type="button"
+              onClick={() => setShowBgModal(true)}
+              className="px-1 text-[10px] text-stone-300 hover:text-amber-300 font-mono cursor-pointer"
+              title={`${currentBambooPhoto.category} - Click for photo options`}
+            >
+              {(currentIndex % CONTINUOUS_BAMBOO_IMAGES.length) + 1}/{CONTINUOUS_BAMBOO_IMAGES.length}
+            </button>
+
+            {/* Next */}
+            <button
+              type="button"
+              onClick={handleNextPhoto}
+              aria-label="Next bamboo photo"
+              className="p-0.5 rounded hover:bg-white/20 text-stone-400 hover:text-white transition cursor-pointer"
+              title="Next photo"
+            >
+              <ChevronRight className="w-2.5 h-2.5" />
+            </button>
+
+            {/* Pure Photo / Toggle Text overlay */}
+            <button
+              type="button"
+              onClick={() => setPurePhotoView(!purePhotoView)}
+              className={`p-0.5 rounded transition cursor-pointer ${
+                purePhotoView 
+                  ? 'text-amber-400' 
+                  : 'text-stone-400 hover:text-white'
+              }`}
+              title={purePhotoView ? 'Show text & buttons' : 'Hide text to view full background photo'}
+            >
+              {purePhotoView ? <Eye className="w-2.5 h-2.5" /> : <EyeOff className="w-2.5 h-2.5" />}
+            </button>
+
+            {/* Options Modal */}
+            <button
+              type="button"
+              onClick={() => setShowBgModal(true)}
+              className="p-0.5 rounded hover:bg-white/20 text-amber-400 hover:text-amber-300 transition cursor-pointer"
+              title="Open bamboo photo settings"
+            >
+              <Sliders className="w-2.5 h-2.5" />
+            </button>
+          </div>
         </div>
+
+        {/* Bottom Area: Refined, Compact Typography & Action Buttons (Unobstructed Background) */}
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 w-full">
+          {/* Main Hero Content: Fades smoothly when in Pure Photo view */}
+          <div className={`transition-all duration-500 max-w-lg sm:max-w-xl ${purePhotoView ? 'opacity-0 pointer-events-none translate-y-4' : 'opacity-100 translate-y-0'}`}>
+            
+            {/* Elegant, Frosted Glass Card with Enhanced Finish & Small Footprint */}
+            <div className="bg-black/45 hover:bg-black/55 backdrop-blur-md p-4 sm:p-5 rounded-2xl border border-white/15 shadow-2xl transition-all duration-300">
+              {/* Artisan Badge */}
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-bold tracking-wider uppercase mb-2 border border-amber-400/30">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span>Direct Artisan · Greater Noida &amp; NCR</span>
+              </div>
+
+              {/* Smaller, Refined & Crisp Headline */}
+              <h1 className="font-hero text-lg sm:text-2xl md:text-[25px] font-bold text-white tracking-tight leading-snug mb-1.5 drop-shadow-sm">
+                Bamboo Chick Maker <span className="text-amber-400 font-semibold">&amp;</span> Shiva Fabrication
+              </h1>
+
+              {/* Refined Subtitle */}
+              <p className="font-hero text-stone-200 text-xs sm:text-[13px] leading-relaxed mb-3.5 max-w-md font-normal drop-shadow-sm">
+                Handcrafted bamboo chicks, blinds, huts &amp; fabrication by craftsman Shiva. Direct workshop pricing across Greater Noida &amp; NCR.
+              </p>
+
+              {/* Action Buttons: Compact & Sleek */}
+              <div className="flex flex-wrap items-center gap-2 sm:gap-2.5 mb-2.5">
+                <Link
+                  to="/calculator"
+                  className="inline-flex items-center justify-center gap-1.5 bg-[#E85D26] hover:bg-[#D94E18] text-white px-4 py-2 rounded-full font-bold transition-all hover:scale-105 shadow-md text-xs border border-amber-400/30"
+                >
+                  Calculate Price <ArrowRight className="w-3 h-3" />
+                </Link>
+                
+                <button
+                  onClick={onBookMeasurement}
+                  className="inline-flex items-center justify-center gap-1.5 bg-white/20 hover:bg-white/30 backdrop-blur-md text-white px-3.5 py-2 rounded-full font-bold transition-all hover:scale-105 border border-white/25 text-xs cursor-pointer"
+                >
+                  <Ruler className="w-3 h-3 text-amber-300" /> Book Free Visit
+                </button>
+
+                <a
+                  href="tel:+918826054537"
+                  className="inline-flex items-center justify-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white px-3.5 py-2 rounded-full font-bold transition-all hover:scale-105 text-xs shadow-md"
+                >
+                  <Phone className="w-3 h-3" /> Call: 8826054537
+                </a>
+              </div>
+
+              {/* Minimal Badges */}
+              <div className="pt-2 border-t border-white/10 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] font-medium text-stone-300">
+                <span className="text-amber-300 font-bold">✓ From ₹58/sq.ft</span>
+                <span>✓ Direct Artisan Workshop</span>
+                <span>✓ 5-Year Guarantee</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Continuous Slideshow Progress Indicator Bar at Bottom Edge */}
+        {isAutoChanging && (
+          <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/10 z-20 overflow-hidden">
+            <div
+              key={progressKey}
+              style={{ animationDuration: `${changeInterval}ms` }}
+              className="h-full bg-gradient-to-r from-amber-400 via-amber-300 to-amber-500 animate-[progress_linear_forwards]"
+            />
+          </div>
+        )}
       </section>
 
       {/* OUR SERVICES Photo Gallery Carousel (Matching User's Uploaded Screenshot Exactly) */}
@@ -208,10 +503,10 @@ export default function HomePage({ onBookMeasurement }: HomePageProps) {
               <Sparkles className="w-3.5 h-3.5 text-brand-300" /> Direct Workshop Value
             </div>
             <h2 className="font-display text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-2 tracking-tight drop-shadow-md">
-              Why Choose Bamboo Chick Maker &amp; Shiva Fabrication?
+              Why Choose Bamboo Chick Maker?
             </h2>
-            <p className="text-stone-200 max-w-xl mx-auto text-xs sm:text-sm leading-relaxed">
-              Premium handcrafted Assam bamboo chicks, huts, gazebos, welding roof structures, safety nets, artificial grass &amp; channel blinds across Greater Noida, Noida &amp; NCR.
+            <p className="text-stone-200 max-w-lg mx-auto text-xs sm:text-sm leading-relaxed">
+              Direct artisan workshop pricing, Assam bamboo materials, and 5-year replacement warranty.
             </p>
           </div>
 
@@ -235,19 +530,27 @@ export default function HomePage({ onBookMeasurement }: HomePageProps) {
           </div>
 
           <div className="mt-8 text-center">
-            <div className="inline-flex flex-wrap items-center justify-center gap-2 sm:gap-4 bg-black/75 backdrop-blur-xl px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl border border-white/20 text-xs text-stone-200 shadow-xl font-medium">
-              <span className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                Workshop: LG-04, Asarfi Plaza, Sector 149, Greater Noida, UP 201310
-              </span>
-              <span className="text-white/30 hidden sm:inline">|</span>
-              <span>Proprietor: Shiva (+91 88260 54537)</span>
-              <span className="text-white/30 hidden sm:inline">|</span>
-              <span>Direct Workshop Pricing</span>
+            <div className="inline-flex items-center justify-center gap-3 bg-black/75 backdrop-blur-xl px-5 py-2.5 rounded-xl border border-white/20 text-xs text-stone-200 shadow-xl font-medium">
+              <span className="w-2 h-2 rounded-full bg-emerald-400" />
+              <span>Workshop: Sector 149, Greater Noida · Call +91 88260 54537</span>
             </div>
           </div>
         </div>
       </section>
+
+      {/* Modal for Selecting Bamboo Photos, Continuous Speed & Custom URL */}
+      <HeroBackgroundModal
+        open={showBgModal}
+        onClose={() => setShowBgModal(false)}
+        currentBg={activeDisplayUrl}
+        onSelectBg={handleSelectBg}
+        overlayStyle={overlayStyle}
+        onChangeOverlay={handleChangeOverlay}
+        isAutoChanging={isAutoChanging}
+        onToggleAutoChange={() => setIsAutoChanging(!isAutoChanging)}
+        changeInterval={changeInterval}
+        onChangeInterval={(ms) => setChangeInterval(ms)}
+      />
     </PageTransition>
   );
 }
