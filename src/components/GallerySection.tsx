@@ -19,7 +19,7 @@ export interface ShowcaseService {
   };
 }
 
-export const SHOWCASE_SERVICES: ShowcaseService[] = [
+const SHOWCASE_SERVICES: ShowcaseService[] = [
   {
     id: 'fancy-chick-maker',
     title: 'FANCY CHICK MAKER',
@@ -526,14 +526,14 @@ export default function GallerySection() {
 
         </div>
 
-        {/* View All Work Link */}
+        {/* View All Work Button */}
         <div className="mt-8 text-center">
           <Link
             to="/gallery"
-            className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-[#E85D26] hover:text-[#D94E18] transition-colors"
+            className="inline-flex items-center gap-2.5 px-6 py-3 rounded-full bg-[#E85D26] hover:bg-[#D94E18] text-white font-bold shadow-md hover:shadow-lg hover:scale-105 active:scale-95 transition-all text-sm sm:text-base group"
           >
             <span>View All 50+ Real Installation Photos in Gallery</span>
-            <ArrowRight className="w-4 h-4" />
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>
 

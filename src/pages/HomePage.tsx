@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import PageTransition from '../components/PageTransition';
 import GallerySection from '../components/GallerySection';
+import FeaturedProductsShowcase from '../components/FeaturedProductsShowcase';
 import BeforeAfterSlider from '../components/BeforeAfterSlider';
 import HeroBackgroundModal, { BAMBOO_DESIGN_PRESETS } from '../components/HeroBackgroundModal';
 
@@ -24,7 +25,7 @@ export interface BambooHeroImage {
   tag: string;
 }
 
-export const CONTINUOUS_BAMBOO_IMAGES: BambooHeroImage[] = [
+const CONTINUOUS_BAMBOO_IMAGES: BambooHeroImage[] = [
   {
     id: 'bamboo-slat-window',
     name: 'Balcony Bamboo Chick Blinds',
@@ -335,6 +336,9 @@ export default function HomePage({ onBookMeasurement }: HomePageProps) {
       {/* OUR SERVICES Photo Gallery Carousel (Matching User's Uploaded Screenshot Exactly) */}
       <GallerySection />
 
+      {/* Featured Products Showcase Section with Animations */}
+      <FeaturedProductsShowcase />
+
       {/* Human Craft Process Section (Cleaned for Mobile) */}
       <section className="py-10 sm:py-16 bg-[#FAF7F2] text-stone-900 border-y border-stone-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
@@ -363,9 +367,6 @@ export default function HomePage({ onBookMeasurement }: HomePageProps) {
                       className="w-full h-full object-cover"
                       loading="lazy"
                     />
-                  </div>
-                  <div className="text-[10px] sm:text-[11px] font-bold text-[#E85D26] tracking-widest uppercase mb-0.5 sm:mb-1">
-                    Step {step.step}
                   </div>
                   <h3 className="font-display text-xs sm:text-sm font-bold text-stone-900 mb-1 line-clamp-1">
                     {step.title}

@@ -128,17 +128,6 @@ export default function LoginPage({ defaultTab = 'login' }: LoginPageProps) {
     }
   }
 
-  function handleFillAdmin() {
-    setIdentifier('admin@chickmakers.com');
-    setPassword('admin');
-    setError(null);
-  }
-
-  function handleFillCustomer() {
-    setIdentifier('vikram@example.com');
-    setPassword('customer123');
-    setError(null);
-  }
 
   return (
     <PageTransition>
@@ -292,28 +281,6 @@ export default function LoginPage({ defaultTab = 'login' }: LoginPageProps) {
                   <span>Continue with Google / Gmail</span>
                 </button>
 
-                {/* 1-Click Quick Testing Helpers */}
-                <div className="mt-5 pt-4 border-t border-stone-800 text-center">
-                  <p className="text-[11px] text-stone-400 mb-2 font-medium">Quick Demo Sign-In:</p>
-                  <div className="grid grid-cols-2 gap-2">
-                    <button
-                      type="button"
-                      onClick={handleFillAdmin}
-                      className="p-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-300 text-xs font-semibold flex items-center justify-center gap-1.5 transition"
-                    >
-                      <ShieldCheck className="w-3.5 h-3.5 text-amber-400" />
-                      <span>Admin Demo</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={handleFillCustomer}
-                      className="p-2 rounded-xl bg-stone-900 hover:bg-stone-800 border border-stone-700 text-stone-300 text-xs font-semibold flex items-center justify-center gap-1.5 transition"
-                    >
-                      <User className="w-3.5 h-3.5 text-stone-400" />
-                      <span>Customer Demo</span>
-                    </button>
-                  </div>
-                </div>
               </form>
             ) : (
               /* ─── COMMON SIGNUP FORM ─── */

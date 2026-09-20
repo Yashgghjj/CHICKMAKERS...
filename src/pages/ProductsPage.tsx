@@ -19,7 +19,7 @@ export default function ProductsPage({ onSelectProduct, onAddStandardProduct }: 
   return (
     <PageTransition>
       {/* Page Header */}
-      <section className="bg-gradient-to-r from-sage-900 via-sage-800 to-brand-900 text-white py-14 md:py-18">
+      <section className="bg-gradient-to-r from-sage-900 via-sage-800 to-brand-900 text-white py-14 md:py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <h1 className="font-display text-3xl md:text-4xl font-bold mb-3">Product Catalog</h1>
           <p className="text-stone-300 max-w-xl">
