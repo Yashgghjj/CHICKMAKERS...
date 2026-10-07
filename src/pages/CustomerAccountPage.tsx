@@ -26,7 +26,7 @@ import PageTransition from '../components/PageTransition';
 import GoogleSignInModal, { GoogleIcon } from '../components/GoogleSignInModal';
 
 export default function CustomerAccountPage() {
-  const { customerUser, logout, updateProfile } = useCustomerAuth();
+  const { customerUser, isLoading, logout, updateProfile } = useCustomerAuth();
   const navigate = useNavigate();
 
   const [orders, setOrders] = useState<Order[]>([]);
@@ -43,8 +43,9 @@ export default function CustomerAccountPage() {
   const [pincode, setPincode] = useState('');
 
   useEffect(() => {
+    if (isLoading) return;
     if (!customerUser) {
-      navigate('/login?returnUrl=/account');
+      navigate('/login?returnUrl=/account', { replace: true });
       return;
     }
     setName(customerUser.name || '');
@@ -67,9 +68,19 @@ export default function CustomerAccountPage() {
       .finally(() => {
         setLoadingOrders(false);
       });
-  }, [customerUser, navigate]);
+  }, [customerUser, isLoading, navigate]);
 
-  if (!customerUser) return null;
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-stone-50/70 flex items-center justify-center p-4">
+        <div className="w-10 h-10 border-4 border-brand-500/30 border-t-brand-500 rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (!customerUser) {
+    return null;
+  }
 
   async function handleSaveProfile(e: React.FormEvent) {
     e.preventDefault();

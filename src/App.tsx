@@ -21,6 +21,7 @@ import CustomerAuthModal from './components/CustomerAuthModal';
 import LoginPage from './pages/LoginPage';
 
 // Auth & Admin Imports
+import { ToastProvider } from './context/ToastContext';
 import { AuthProvider } from './context/AuthContext';
 import { CustomerAuthProvider } from './context/CustomerAuthContext';
 import { AdminAuthProvider } from './context/AdminAuthContext';
@@ -231,13 +232,15 @@ function AppContent() {
 export default function App() {
   return (
     <BrowserRouter>
-      <AuthProvider>
-        <AdminAuthProvider>
-          <CustomerAuthProvider>
-            <AppContent />
-          </CustomerAuthProvider>
-        </AdminAuthProvider>
-      </AuthProvider>
+      <ToastProvider>
+        <AuthProvider>
+          <AdminAuthProvider>
+            <CustomerAuthProvider>
+              <AppContent />
+            </CustomerAuthProvider>
+          </AdminAuthProvider>
+        </AuthProvider>
+      </ToastProvider>
     </BrowserRouter>
   );
 }

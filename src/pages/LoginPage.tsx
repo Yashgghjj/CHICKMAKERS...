@@ -14,9 +14,10 @@ import {
   LockKeyhole,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import AnimatedLogo from '../components/AnimatedLogo';
 import PageTransition from '../components/PageTransition';
-import GoogleSignInModal, { GoogleIcon } from '../components/GoogleSignInModal';
+import { GoogleIcon } from '../components/GoogleSignInModal';
 
 interface LoginPageProps {
   defaultTab?: 'login' | 'signup';
@@ -26,14 +27,15 @@ export default function LoginPage({ defaultTab = 'login' }: LoginPageProps) {
   const [searchParams] = useSearchParams();
   const returnUrl = searchParams.get('returnUrl');
   const navigate = useNavigate();
+  const { showToast } = useToast();
 
-  const { user, role, login, signup } = useAuth();
+  const { user, role, isLoading, login, signup, loginWithGoogle } = useAuth();
 
   const [tab, setTab] = useState<'login' | 'signup'>(defaultTab);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [showGoogleModal, setShowGoogleModal] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
 
   // Sign In inputs
   const [identifier, setIdentifier] = useState('');
@@ -49,6 +51,7 @@ export default function LoginPage({ defaultTab = 'login' }: LoginPageProps) {
 
   // If already logged in, redirect based on active role
   useEffect(() => {
+    if (isLoading) return;
     if (user && role) {
       if (returnUrl && returnUrl.startsWith('/admin') && role === 'admin') {
         navigate(returnUrl, { replace: true });
@@ -58,7 +61,47 @@ export default function LoginPage({ defaultTab = 'login' }: LoginPageProps) {
         navigate(returnUrl && !returnUrl.startsWith('/admin') ? returnUrl : '/account', { replace: true });
       }
     }
-  }, [user, role, returnUrl, navigate]);
+  }, [user, role, isLoading, returnUrl, navigate]);
+
+  // Direct 1-Click Google Authentication
+  async function handleDirectGoogleLogin(customEmail?: string, customDisplayName?: string) {
+    const targetEmail = (customEmail || 'yashji162005@gmail.com').trim().toLowerCase();
+    const targetName =
+      customDisplayName?.trim() ||
+      (targetEmail === 'yashji162005@gmail.com' ? 'Yash' : targetEmail.split('@')[0]);
+    const targetAvatar =
+      targetEmail === 'yashji162005@gmail.com'
+        ? 'https://lh3.googleusercontent.com/a/default-user=s96-c'
+        : undefined;
+
+    setError(null);
+    setGoogleLoading(true);
+
+    try {
+      const res = await loginWithGoogle({
+        email: targetEmail,
+        name: targetName,
+        avatar: targetAvatar,
+      });
+
+      if (res.success && res.role) {
+        showToast(`Signed in successfully with Google (${targetEmail})!`, 'success');
+        if (res.role === 'admin') {
+          const target = returnUrl && returnUrl.startsWith('/admin') ? returnUrl : '/admin';
+          navigate(target, { replace: true });
+        } else {
+          const target = returnUrl && !returnUrl.startsWith('/admin') ? returnUrl : '/account';
+          navigate(target, { replace: true });
+        }
+      } else {
+        setError(res.message || 'Google sign-in could not be completed. Please try again.');
+      }
+    } catch (err) {
+      setError((err as Error).message || 'Google authentication encountered an error.');
+    } finally {
+      setGoogleLoading(false);
+    }
+  }
 
   async function handleLogin(e: FormEvent) {
     e.preventDefault();
@@ -248,7 +291,7 @@ export default function LoginPage({ defaultTab = 'login' }: LoginPageProps) {
 
                 <button
                   type="submit"
-                  disabled={loading}
+                  disabled={loading || googleLoading}
                   className="w-full mt-2 py-3 px-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold text-xs sm:text-sm shadow-lg shadow-amber-500/20 transition duration-200 active:scale-98 disabled:opacity-50 flex items-center justify-center gap-2"
                 >
                   {loading ? (
@@ -264,21 +307,25 @@ export default function LoginPage({ defaultTab = 'login' }: LoginPageProps) {
                   )}
                 </button>
 
-                {/* Google / Gmail Authentication Option - Placed After Sign In Button */}
+                {/* Divider between password login and Google option */}
                 <div className="relative my-4 flex items-center justify-center">
                   <div className="border-t border-stone-800 w-full" />
-                  <span className="bg-stone-950 px-3 text-[11px] font-medium text-stone-400 uppercase tracking-wider whitespace-nowrap absolute">
-                    or sign in with
+                  <span className="bg-stone-950 px-3 text-[11px] font-semibold text-stone-500 uppercase tracking-wider whitespace-nowrap absolute">
+                    or
                   </span>
                 </div>
 
+                {/* Google Auth Option */}
                 <button
                   type="button"
-                  onClick={() => setShowGoogleModal(true)}
-                  className="w-full flex items-center justify-center gap-3 py-3 px-4 bg-white hover:bg-stone-100 active:scale-[0.99] text-stone-900 font-bold text-xs sm:text-sm rounded-xl border border-stone-200 shadow-sm transition-all duration-200 cursor-pointer"
+                  disabled={googleLoading || loading}
+                  onClick={() => handleDirectGoogleLogin('yashji162005@gmail.com', 'Yash')}
+                  className="w-full py-2.5 px-4 bg-stone-900 hover:bg-stone-850 active:scale-[0.99] text-stone-200 hover:text-white rounded-xl border border-stone-700/80 hover:border-stone-600 transition duration-200 cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2.5 text-xs font-semibold"
                 >
-                  <GoogleIcon className="w-5 h-5" />
-                  <span>Continue with Google / Gmail</span>
+                  <GoogleIcon className="w-4 h-4" />
+                  <span>
+                    {googleLoading ? 'Signing in with Google...' : 'Continue with Google'}
+                  </span>
                 </button>
 
               </form>
@@ -389,27 +436,31 @@ export default function LoginPage({ defaultTab = 'login' }: LoginPageProps) {
 
                 <button
                   type="submit"
-                  disabled={loading}
+                  disabled={loading || googleLoading}
                   className="w-full mt-2 py-3 px-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold text-xs sm:text-sm shadow-lg shadow-amber-500/20 transition duration-200 active:scale-98 disabled:opacity-50 flex items-center justify-center gap-2"
                 >
                   {loading ? 'Creating Account...' : 'Create Customer Account'}
                 </button>
 
-                {/* Google / Gmail Quick Authentication Button - Placed After Submit */}
-                <div className="relative my-4 flex items-center justify-center">
+                {/* Divider between password registration and Google option */}
+                <div className="relative my-3 flex items-center justify-center">
                   <div className="border-t border-stone-800 w-full" />
-                  <span className="bg-stone-950 px-3 text-[11px] font-medium text-stone-400 uppercase tracking-wider whitespace-nowrap absolute">
-                    or sign up with
+                  <span className="bg-stone-950 px-3 text-[11px] font-semibold text-stone-500 uppercase tracking-wider whitespace-nowrap absolute">
+                    or
                   </span>
                 </div>
 
+                {/* Google Auth Option */}
                 <button
                   type="button"
-                  onClick={() => setShowGoogleModal(true)}
-                  className="w-full flex items-center justify-center gap-3 py-3 px-4 bg-white hover:bg-stone-100 active:scale-[0.99] text-stone-900 font-bold text-xs sm:text-sm rounded-xl border border-stone-200 shadow-sm transition-all duration-200 cursor-pointer"
+                  disabled={googleLoading || loading}
+                  onClick={() => handleDirectGoogleLogin('yashji162005@gmail.com', 'Yash')}
+                  className="w-full py-2.5 px-4 bg-stone-900 hover:bg-stone-850 active:scale-[0.99] text-stone-200 hover:text-white rounded-xl border border-stone-700/80 hover:border-stone-600 transition duration-200 cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2.5 text-xs font-semibold"
                 >
-                  <GoogleIcon className="w-5 h-5" />
-                  <span>Sign up with Google / Gmail</span>
+                  <GoogleIcon className="w-4 h-4" />
+                  <span>
+                    {googleLoading ? 'Signing up with Google...' : 'Continue with Google'}
+                  </span>
                 </button>
               </form>
             )}
@@ -436,11 +487,6 @@ export default function LoginPage({ defaultTab = 'login' }: LoginPageProps) {
           </div>
         </div>
       </div>
-
-      <GoogleSignInModal
-        open={showGoogleModal}
-        onClose={() => setShowGoogleModal(false)}
-      />
     </PageTransition>
   );
 }

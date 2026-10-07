@@ -110,11 +110,10 @@ export default function Header({ cartCount, onCartOpen, onOpenCustomerAuth }: He
             ) : (
               <Link
                 to="/login"
-                className="inline-flex items-center gap-1.5 text-xs font-semibold text-stone-700 hover:text-stone-950 bg-stone-100/80 hover:bg-stone-200/80 px-3 py-2 rounded-full border border-stone-200/70 transition-all duration-200 whitespace-nowrap active:scale-95 shadow-2xs"
-                title="Sign In or Register"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-stone-700 hover:text-stone-950 bg-stone-100/80 hover:bg-stone-200/80 px-3 py-2 rounded-full border border-stone-200/80 transition-all duration-200 whitespace-nowrap active:scale-95 shadow-2xs"
               >
-                <User className="w-3.5 h-3.5 text-stone-500" />
-                <span className="hidden sm:inline">Sign In</span>
+                <User className="w-3.5 h-3.5" />
+                <span>Sign In</span>
               </Link>
             )}
 
@@ -203,9 +202,10 @@ export default function Header({ cartCount, onCartOpen, onOpenCustomerAuth }: He
               <Link
                 to="/login"
                 onClick={() => setMobileOpen(false)}
-                className="flex items-center gap-2 text-sm font-semibold text-brand-600 bg-brand-50 px-3 py-2.5 rounded-xl border border-brand-200 mb-1 text-left w-full"
+                className="flex items-center gap-2 text-sm font-semibold text-brand-600 bg-brand-50 px-3 py-2.5 rounded-xl border border-brand-200 mb-1"
               >
-                <User className="w-4 h-4 text-brand-600" /> Sign In / Create Account
+                <User className="w-4 h-4" />
+                <span>Customer & Admin Sign In</span>
               </Link>
             )}
 
